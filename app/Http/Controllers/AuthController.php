@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use App\Models\Client;
+use App\Models\Employee;
 
 class AuthController extends Controller
 {
@@ -38,39 +39,63 @@ public function login(Request $request)
 
         $user = Auth::user();
 
-        
-        // Check if user has a client record and if it's active
-        $client = Client::where('user_id', $user->id)->first();
+        if ($user->hasRole('super-admin')) {
+            $request->session()->regenerate();
 
-        if (!$client->is_active) {
-            Auth::logout();
             return response()->json([
-                'success' => false,
-                'message' => 'Votre compte client est désactivé. Contactez l\'administration.',
-                'is_active' => false,
-                'client_data' => [
-                    'id' => $client->id,
-                    'deactivated_at' => $client->deactivated_at // optional
-                ]
-            ], 403);
+                'success' => true,
+                'redirect' => route('super-admin.dashboard'),
+                'message' => 'Connexion réussie!'
+            ]);
         }
 
-        // Vérifier le rôle admin
-        if (!$user->hasRole('client')) {
-            Auth::logout(); // déconnecter l'utilisateur
+        if ($user->hasRole('client')) {
+            $client = Client::where('user_id', $user->id)->first();
+
+            if (!$client || !$client->is_active) {
+                Auth::logout();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Votre compte client est désactivé. Contactez l\'administration.',
+                    'is_active' => false,
+                ], 403);
+            }
+
+            $request->session()->regenerate();
+
             return response()->json([
-                'success' => false,
-                'message' => 'Vous n\'êtes pas autorisé à vous connecter ici.'
-            ], 403);
+                'success' => true,
+                'redirect' => route('dashboard'),
+                'message' => 'Connexion réussie!'
+            ]);
         }
 
-        $request->session()->regenerate();
+        if ($user->hasRole('employee')) {
+            $employee = Employee::where('user_id', $user->id)->first();
 
+            if (!$employee || $employee->status !== 'active' || !$employee->client || !$employee->client->is_active) {
+                Auth::logout();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Votre compte est désactivé. Contactez l\'administration.',
+                ], 403);
+            }
+
+            $request->session()->regenerate();
+
+            return response()->json([
+                'success' => true,
+                'redirect' => route('employee-portal.index'),
+                'message' => 'Connexion réussie!'
+            ]);
+        }
+
+        // Aucun rôle reconnu
+        Auth::logout();
         return response()->json([
-            'success' => true,
-            'redirect' => route('dashboard'),
-            'message' => 'Connexion réussie!'
-        ]);
+            'success' => false,
+            'message' => 'Vous n\'êtes pas autorisé à vous connecter ici.'
+        ], 403);
     }
 
     return response()->json([

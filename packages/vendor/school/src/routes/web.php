@@ -5,6 +5,7 @@ use Vendor\School\Controllers\ClassController;
 use Vendor\School\Controllers\VacationScheduleController;
 use Vendor\School\Controllers\PenaltyRuleController;
 use Vendor\School\Controllers\VacationReportController;
+use Vendor\School\Controllers\EmployeePortalController;
 
 Route::middleware(['web', 'auth', 'role:client', 'client.active'])->group(function () {
 
@@ -37,3 +38,15 @@ Route::middleware(['web', 'auth', 'role:client', 'client.active'])->group(functi
     });
 
 });
+
+// Espace enseignant : module school limité aux données de l'enseignant connecté
+Route::middleware(['web', 'auth', 'role:employee', 'employee.active'])
+    ->prefix('mon-espace')
+    ->name('employee-portal.')
+    ->group(function () {
+        Route::get('/', [EmployeePortalController::class, 'index'])->name('index');
+        Route::get('/classes', [EmployeePortalController::class, 'classes'])->name('classes');
+        Route::get('/rapports', [EmployeePortalController::class, 'reports'])->name('reports');
+        Route::get('/rapports/presence-pdf', [EmployeePortalController::class, 'presencePdf'])->name('presence-pdf');
+        Route::get('/rapports/payment-pdf', [EmployeePortalController::class, 'paymentPdf'])->name('payment-pdf');
+    });

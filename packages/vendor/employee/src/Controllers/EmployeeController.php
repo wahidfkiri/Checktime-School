@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
@@ -58,11 +60,12 @@ class EmployeeController extends Controller
            // 'emp_code' => 'required|string|max:50',
             'first_name' => 'required|string|max:100',
             'last_name' => 'nullable|string|max:100',
-            'email' => 'nullable|email|max:255',
+            'email' => 'nullable|email|max:255|required_with:password',
             'phone' => 'nullable|string|max:20',
             'area_id' => 'nullable|integer',
             'department_id' => 'nullable|integer',
             'address' => 'nullable|string|max:500',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         // Ajouter le client_id
@@ -119,13 +122,27 @@ class EmployeeController extends Controller
         if ($response->successful()) {
             $responseData = $response->json();
             $this->sync($request); // Synchroniser après création
-            
-            // Optionnel: Sauvegarder aussi en local
-            // Employee::create(array_merge($validated, ['external_id' => $responseData['id']]));
-            
+
+            $accountCreated = false;
+
+            if (!empty($validated['email']) && !empty($validated['password'])) {
+                $employee = Employee::where('client_id', $client->id)
+                    ->where('emp_code', $nextCode)
+                    ->first();
+
+                if ($employee) {
+                    $accountCreated = $this->createEmployeeAccount(
+                        $employee,
+                        $validated['email'],
+                        $validated['password']
+                    );
+                }
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Employé créé avec succès',
+                'message' => 'Enseignant créé avec succès',
+                'account_created' => $accountCreated,
                 'data' => $responseData
             ]);
         } else {
@@ -172,7 +189,7 @@ public function update(Request $request, $id)
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'area_id' => 'nullable|integer',
-            'department_id' => 'required|integer',
+            'department_id' => 'nullable|integer',
             'address' => 'nullable|string|max:500',
         ]);
 
@@ -217,7 +234,7 @@ public function update(Request $request, $id)
             
             return response()->json([
                 'success' => true,
-                'message' => 'Employé modifié avec succès',
+                'message' => 'Enseignant modifié avec succès',
                 'data' => $responseData
             ]);
         } else {
@@ -280,7 +297,7 @@ public function destroy($id)
             Employee::where('employee_id', $id)->where('client_id', $client->id)->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Employé supprimé avec succès'
+                'message' => 'Enseignant supprimé avec succès'
             ]);
         } else {
             $errorMessage = 'Erreur lors de la suppression';
@@ -299,7 +316,7 @@ public function destroy($id)
         }
 
     } catch (\Exception $e) {
-        
+
         Log::info('Error : ' . $e->getMessage());
         return response()->json([
             'success' => false,
@@ -307,6 +324,86 @@ public function destroy($id)
         ], 500);
     }
 }
+
+    /**
+     * Créer un accès (compte de connexion, rôle 'employee') pour un enseignant
+     * déjà synchronisé qui n'en a pas encore.
+     */
+    public function createAccess(Request $request, $id)
+    {
+        try {
+            $client = Client::where('user_id', auth()->id())->first();
+
+            $employee = Employee::where('client_id', $client->id ?? 0)->find($id);
+
+            if (!$employee) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Enseignant introuvable.'
+                ], 404);
+            }
+
+            if ($employee->user_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cet enseignant a déjà un accès.'
+                ], 422);
+            }
+
+            $validated = $request->validate([
+                'email' => 'required|email|max:255|unique:users,email',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+
+            $this->createEmployeeAccount($employee, $validated['email'], $validated['password']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Accès créé avec succès.'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur interne: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Crée le compte de connexion (rôle 'employee') pour un enseignant et le lie
+     * à sa fiche. Ne lève jamais d'exception : retourne false en cas d'échec pour
+     * ne jamais faire échouer la création/synchronisation de l'enseignant elle-même.
+     */
+    private function createEmployeeAccount(Employee $employee, string $email, string $password): bool
+    {
+        try {
+            if ($employee->user_id) {
+                return false;
+            }
+
+            $user = User::create([
+                'name' => trim($employee->first_name . ' ' . ($employee->last_name ?? '')),
+                'email' => $email,
+                'password' => bcrypt($password),
+            ]);
+
+            Role::firstOrCreate(['name' => 'employee', 'guard_name' => 'web']);
+            $user->assignRole('employee');
+
+            $employee->update(['user_id' => $user->id]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Erreur création accès enseignant #{$employee->id}: " . $e->getMessage());
+            return false;
+        }
+    }
 
     /**
      * Synchronisation manuelle
@@ -656,6 +753,9 @@ public function destroy($id)
             })
             ->addColumn('address', function($employee) {
                 return $employee->address ?? '';  // Ajoutez ceci si nécessaire
+            })
+            ->addColumn('user_id', function($employee) {
+                return $employee->user_id;
             })
             ->addColumn('status_badge', function($employee) {
                 $status = strtolower($employee->status ?? 'active');

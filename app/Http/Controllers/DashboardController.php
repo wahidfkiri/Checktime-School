@@ -9,6 +9,9 @@ use App\Models\Department;
 use App\Models\Zone;
 use App\Models\Device;
 use App\Models\DailyAttendance;
+use App\Models\SchoolClass;
+use App\Models\EmployeeSchedule;
+use App\Services\VacationCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -53,103 +56,127 @@ class DashboardController extends Controller
             ->where('is_late', true)
             ->count();
         
-        $totalDepartments = Department::where('client_id', $clientId)->count();
-        $totalZones = Zone::where('client_id', $clientId)->count();
-        $totalDevices = Device::where('client_id', $clientId)->count();
-        
-        // Appareils récemment synchronisés
-        $recentlySyncedDevices = Device::where('client_id', $clientId)
-            ->whereNotNull('last_sync')
-            ->where('last_sync', '>=', Carbon::now()->subDay())
-            ->count();
-        
         // Données pour graphiques
         $employeeStatusData = [
             'active' => $activeEmployees,
             'inactive' => $inactiveEmployees,
             'suspended' => $suspendedEmployees
         ];
-        
+
         // Statistiques de présence pour le graphique
         $attendanceTodayData = [
             'present' => $totalPresentToday,
             'absent' => $totalAbsentToday,
             'retard' => $totalRetardToday
         ];
-        
-        // Top départements par nombre d'employés
-        $topDepartments = Employee::where('client_id', $clientId)
-            ->select('dept_name', DB::raw('COUNT(*) as count'))
-            ->whereNotNull('dept_name')
-            ->groupBy('dept_name')
+
+        // ---- Statistiques "package école" (classes, vacations, paie) ----
+
+        $totalClasses = SchoolClass::forClient($clientId)->count();
+        $activeClasses = SchoolClass::forClient($clientId)->active()->count();
+
+        $classesByLevel = SchoolClass::forClient($clientId)
+            ->select('level', DB::raw('COUNT(*) as count'))
+            ->groupBy('level')
             ->orderBy('count', 'desc')
-            ->take(5)
             ->get();
-        
-        $topDepartmentsLabels = $topDepartments->pluck('dept_name')->toArray();
-        $topDepartmentsCountData = $topDepartments->pluck('count')->toArray();
-        
-        // Top zones par nombre d'employés
-        $topZones = Employee::where('client_id', $clientId)
-            ->select('area_name', DB::raw('COUNT(*) as count'))
-            ->whereNotNull('area_name')
-            ->groupBy('area_name')
-            ->orderBy('count', 'desc')
-            ->take(5)
+        $classesByLevelLabels = $classesByLevel->pluck('level')->toArray();
+        $classesByLevelData = $classesByLevel->pluck('count')->toArray();
+
+        $totalVacations = EmployeeSchedule::where('client_id', $clientId)
+            ->where('schedule_type', 'fixe')
+            ->where('is_active', true)
+            ->count();
+
+        $vacationsByDayOfWeek = EmployeeSchedule::where('client_id', $clientId)
+            ->where('schedule_type', 'fixe')
+            ->where('is_active', true)
+            ->select('day_of_week', DB::raw('COUNT(*) as count'))
+            ->groupBy('day_of_week')
+            ->pluck('count', 'day_of_week');
+
+        $dayNames = ['', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+        $vacationsByDayLabels = [];
+        $vacationsByDayData = [];
+        for ($d = 1; $d <= 7; $d++) {
+            $vacationsByDayLabels[] = $dayNames[$d];
+            $vacationsByDayData[] = $vacationsByDayOfWeek[$d] ?? 0;
+        }
+
+        $teachersWithAccount = Employee::where('client_id', $clientId)->whereNotNull('user_id')->count();
+
+        // Agrégat paie/présence des vacations pour le mois en cours (coûteux : mis en cache)
+        $vacationMonthStats = Cache::remember(
+            "vacation_month_stats_{$clientId}_{$today->format('Y-m')}",
+            300,
+            function () use ($clientId, $today) {
+                $service = new VacationCalculationService();
+
+                $teacherIds = EmployeeSchedule::where('client_id', $clientId)
+                    ->where('schedule_type', 'fixe')
+                    ->where('is_active', true)
+                    ->distinct()
+                    ->pluck('employee_id');
+
+                $amount = 0;
+                $lateMinutes = 0;
+                $planned = 0;
+                $present = 0;
+
+                foreach (Employee::whereIn('id', $teacherIds)->get() as $teacher) {
+                    $result = $service->calculateMonth($teacher, $today->year, $today->month, $today);
+                    $amount += $result['amount_to_pay'];
+                    $lateMinutes += $result['total_late_minutes'];
+                    $planned += $result['planned_count'];
+                    $present += $result['present_count'];
+                }
+
+                return [
+                    'amount' => $amount,
+                    'late_minutes' => $lateMinutes,
+                    'presence_rate' => $planned > 0 ? round(($present / $planned) * 100, 1) : 0,
+                ];
+            }
+        );
+
+        // Planning du jour (vacations fixes prévues aujourd'hui)
+        $todaySchedule = EmployeeSchedule::where('client_id', $clientId)
+            ->where('schedule_type', 'fixe')
+            ->where('is_active', true)
+            ->where('day_of_week', $today->dayOfWeekIso)
+            ->with(['employee', 'schoolClass'])
+            ->orderBy('start_time')
             ->get();
-        
-        $topZonesLabels = $topZones->pluck('area_name')->toArray();
-        $topZonesCountData = $topZones->pluck('count')->toArray();
-        
-        // Croissance mensuelle des employés
+
+        // Croissance mensuelle des enseignants
         $monthlyStats = $this->getMonthlyStats($clientId);
         $monthlyLabels = $monthlyStats['labels'];
         $monthlyNewEmployees = $monthlyStats['new_employees'];
-        
+
         // Statistiques de présence hebdomadaires
         $weeklyAttendance = $this->getWeeklyAttendanceStats($clientId);
-        
-        // Derniers employés ajoutés
+
+        // Derniers enseignants ajoutés
         $recentEmployees = Employee::where('client_id', $clientId)
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        
+
         // Dernières présences enregistrées
         $recentAttendances = DailyAttendance::where('client_id', $clientId)
             ->with('employee')
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        
-        // Statut des appareils (calculé APRÈS synchronisation)
-        $fifteenDaysAgo = Carbon::now()->subDays(15);
-        
-        $activeDevices = Device::where('client_id', $clientId)
-            ->whereNotNull('last_sync')
-            ->where('last_sync', '>=', $fifteenDaysAgo)
-            ->count();
-        
-        $inactiveDevices = Device::where('client_id', $clientId)
-            ->where(function($query) use ($fifteenDaysAgo) {
-                $query->whereNull('last_sync')
-                      ->orWhere('last_sync', '<', $fifteenDaysAgo);
-            })
-            ->count();
-        
+
         // Calcul des pourcentages
         $activeEmployeesPercentage = $totalEmployees > 0 ? round(($activeEmployees / $totalEmployees) * 100) : 0;
-        $activeDevicesPercentage = $totalDevices > 0 ? round(($activeDevices / $totalDevices) * 100) : 0;
         $attendanceRate = $activeEmployees > 0 ? round(($totalPresentToday / $activeEmployees) * 100) : 0;
-        
+
         // Synchronisation status
         $lastSyncTime = Cache::get('employees_last_sync_' . $clientId);
         $lastSyncText = $lastSyncTime ? Carbon::createFromTimestamp($lastSyncTime)->diffForHumans() : 'Jamais';
-        
-        // Dernière synchro des appareils
-        $lastDevicesSync = Cache::get('devices_last_sync_' . $clientId);
-        $lastDevicesSyncText = $lastDevicesSync ? Carbon::createFromTimestamp($lastDevicesSync)->diffForHumans() : 'Jamais';
-        
+
         return view('dashboard', compact(
             'client',
             'totalEmployees',
@@ -160,27 +187,25 @@ class DashboardController extends Controller
             'totalAbsentToday',
             'totalRetardToday',
             'attendanceRate',
-            'totalDepartments',
-            'totalZones',
-            'totalDevices',
-            'recentlySyncedDevices',
             'employeeStatusData',
             'attendanceTodayData',
-            'topDepartmentsLabels',
-            'topDepartmentsCountData',
-            'topZonesLabels',
-            'topZonesCountData',
+            'totalClasses',
+            'activeClasses',
+            'classesByLevelLabels',
+            'classesByLevelData',
+            'totalVacations',
+            'vacationsByDayLabels',
+            'vacationsByDayData',
+            'teachersWithAccount',
+            'vacationMonthStats',
+            'todaySchedule',
             'monthlyLabels',
             'monthlyNewEmployees',
             'weeklyAttendance',
             'recentEmployees',
             'recentAttendances',
-            'activeDevices',
-            'inactiveDevices',
             'activeEmployeesPercentage',
-            'activeDevicesPercentage',
-            'lastSyncText',
-            'lastDevicesSyncText'
+            'lastSyncText'
         ));
     }
 

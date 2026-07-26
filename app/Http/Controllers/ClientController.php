@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Services\CheckTimeService;
 use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
@@ -163,9 +164,22 @@ class ClientController extends Controller
                 'email' => $validatedCredentials['login_user'],
                 'password' => bcrypt($validatedCredentials['password_user']),
             ]);
+            $user->assignRole('client');
+
             $client = Client::create($validated + ['user_id' => $user->id]);
             $access_config = $client->accessConfigs()->create($validatedAccess);
 
+            // Paramètres par défaut (emails/SMS) — nécessaires au portail client et au scheduler
+            Setting::firstOrCreate(
+                ['client_id' => $client->id],
+                [
+                    'email' => '',
+                    'email_is_active' => false,
+                    'email_employees_is_active' => false,
+                    'sms_is_active' => false,
+                    'sms_credit' => 0,
+                ]
+            );
 
             return response()->json([
                 'success' => true,
@@ -210,7 +224,6 @@ class ClientController extends Controller
                 'email' => 'required|email|max:255|unique:clients,email,' . $client->id,
                 'telephone' => 'nullable|string|max:20',
                 'adresse' => 'nullable|string|max:500',
-                'ville' => 'nullable|string|max:100',
                 'is_active' => 'boolean'
             ]);
 
@@ -223,6 +236,32 @@ class ClientController extends Controller
            // $client->accessConfigs()->update($validatedAccess);
 
             $client->update($validated);
+
+            // Mise à jour des identifiants de connexion de l'école (optionnel)
+            if ($request->filled('login_user') && $client->user) {
+                $credRules = ['login_user' => 'required|email|max:100|unique:users,email,' . $client->user_id];
+                if ($request->filled('password_user')) {
+                    $credRules['password_user'] = 'string|min:8';
+                    $credRules['password_confirmation'] = 'required|same:password_user';
+                }
+                $cred = $request->validate($credRules);
+
+                $client->user->email = $cred['login_user'];
+                if ($request->filled('password_user')) {
+                    $client->user->password = bcrypt($cred['password_user']);
+                }
+                $client->user->save();
+            }
+
+            // Mise à jour du token API (optionnel)
+            if ($request->filled('general_token')) {
+                $access = $client->accessConfigs()->first();
+                if ($access) {
+                    $access->update(['general_token' => $request->input('general_token')]);
+                } else {
+                    $client->accessConfigs()->create(['general_token' => $request->input('general_token')]);
+                }
+            }
 
             return response()->json([
                 'success' => true,

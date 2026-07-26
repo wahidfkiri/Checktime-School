@@ -28,6 +28,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SignataireController;
 use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\MissionController;
+use App\Http\Controllers\SuperAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,21 +68,33 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
 });
 
-Route::middleware(['auth','web', 'role:client','client.active'])->group(function () {
+// Déconnexion — accessible à tout utilisateur authentifié (super-admin, client, employee)
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+// Espace super-admin — provisionnement/gestion des écoles (clients)
+Route::middleware(['auth','web','role:super-admin'])->group(function () {
+    Route::get('/super-admin/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
+
+    // Gestion des écoles (clients) — CRUD complet
+    Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
+    Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
+    Route::get('/clients/create', [ClientController::class, 'create'])->name('clients.create');
+    Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
+    Route::get('/clients/check-rccm', [ClientController::class, 'checkRccm'])->name('clients.check-rccm');
+    Route::get('/clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
+    Route::put('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
+    Route::delete('/clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
+    Route::post('/clients/{client}/toggle-status', [ClientController::class, 'toggleStatus'])->name('clients.toggle-status');
+});
+
+Route::middleware(['auth','web', 'role:client','client.active'])->group(function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/stats', [DashboardController::class, 'getStatsJson'])->name('super-admin.stats');
+Route::get('/dashboard/stats', [DashboardController::class, 'getStatsJson'])->name('client.stats');
     Route::get('/client/{client}/details', [DashboardController::class, 'getClientDetails'])->name('client.details');
 Route::get('/api/weekly-stats', [DashboardController::class, 'getWeeklyStats'])->name('api.weekly-stats');
-    Route::get('/admin/clients', function () {
-        return view('clients.index');
-    })->name('admin.clients');
 
-    // Route principale pour afficher la liste (avec DataTable)
-    Route::get('/clients', [ClientController::class, 'index'])
-        ->name('clients.index');
-    
-  
 
 
 Route::prefix('devices')->name('devices.')->group(function () {

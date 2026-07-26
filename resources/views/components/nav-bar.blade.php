@@ -9,6 +9,10 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <label class="theme-switch me-3">
+                  <input type="checkbox" id="toggle-dark">
+                  <span>Mode sombre</span>
+                </label>
                 <ul class="navbar-nav ms-auto mb-lg-0">
                   <li class="nav-item dropdown me-3 d-none">
                     <a class="nav-link active dropdown-toggle text-gray-600" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
@@ -62,11 +66,11 @@
                     <div class="user-menu d-flex">
                       <div class="user-name text-end me-3">
                         <h6 class="mb-0 text-gray-600">{{auth()->user()->name}}</h6>
-                        <p class="mb-0 text-sm text-gray-600">Client</p>
+                        <p class="mb-0 text-sm text-gray-600">@if(auth()->user()->hasRole('super-admin'))Super Admin @elseif(auth()->user()->hasRole('employee'))Enseignant @else Client @endif</p>
                       </div>
                       <div class="user-img d-flex align-items-center">
                         <div class="avatar avatar-md">
-                          <span style="width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; background-color:#4361ee; color:#fff; font-weight:bold;">
+                          <span style="width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; background-color:#2F6F62; color:#fff; font-weight:bold; font-family:'Lora',Georgia,serif;">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                           </span>
                         </div>

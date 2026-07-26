@@ -3,7 +3,7 @@
     <div class="sidebar-header position-relative">
       <div class="d-flex justify-content-center align-items-center">
         <div class="logo">
-          <a href="{{route('dashboard')}}">
+          <a href="{{ auth()->user()->hasRole('super-admin') ? route('super-admin.dashboard') : (auth()->user()->hasRole('employee') ? route('employee-portal.index') : route('dashboard')) }}">
             <img src="{{asset('public/logo.jpeg')}}" alt="Logo" srcset="" style=" height: 100px;">
           </a>
         </div>
@@ -16,6 +16,43 @@
       <ul class="menu">
         <li class="sidebar-title">Menu</li>
 
+        @if(auth()->user()->hasRole('super-admin'))
+        <!-- Menu super-admin : provisionnement / gestion des écoles -->
+        <li class="sidebar-item @if(request()->routeIs('super-admin.dashboard')) active @endif">
+          <a href="{{route('super-admin.dashboard')}}" class="sidebar-link">
+            <i class="bi bi-grid-fill"></i>
+            <span>Tableau de bord</span>
+          </a>
+        </li>
+        <li class="sidebar-item @if(request()->routeIs('clients.*')) active @endif">
+          <a href="{{route('clients.index')}}" class="sidebar-link">
+            <i class="bi bi-building"></i>
+            <span>Gestion des <br>écoles</span>
+          </a>
+        </li>
+
+        @elseif(auth()->user()->hasRole('employee'))
+        <!-- Menu enseignant : module school limité à ses propres données -->
+        <li class="sidebar-item @if(request()->routeIs('employee-portal.index')) active @endif">
+          <a href="{{route('employee-portal.index')}}" class="sidebar-link">
+            <i class="bi bi-calendar2-week"></i>
+            <span>Mon planning</span>
+          </a>
+        </li>
+        <li class="sidebar-item @if(request()->routeIs('employee-portal.classes')) active @endif">
+          <a href="{{route('employee-portal.classes')}}" class="sidebar-link">
+            <i class="bi bi-collection"></i>
+            <span>Classes</span>
+          </a>
+        </li>
+        <li class="sidebar-item @if(request()->routeIs('employee-portal.reports') || request()->routeIs('employee-portal.presence-pdf') || request()->routeIs('employee-portal.payment-pdf')) active @endif">
+          <a href="{{route('employee-portal.reports')}}" class="sidebar-link">
+            <i class="bi bi-file-earmark-pdf"></i>
+            <span>Mes rapports</span>
+          </a>
+        </li>
+        @else
+
         <!-- Tableau de bord -->
         <li class="sidebar-item @if(request()->routeIs('dashboard')) active @endif">
           <a href="{{route('dashboard')}}" class="sidebar-link">
@@ -24,32 +61,12 @@
           </a>
         </li>
 
-        <!-- Gestion des Employés -->
-        <li class="sidebar-item has-sub @if(request()->routeIs('employees.*') || request()->routeIs('departments.*') || request()->routeIs('areas.*')) active @endif">
-          <a href="#" class="sidebar-link">
+        <!-- Gestion des Enseignants -->
+        <li class="sidebar-item @if(request()->routeIs('employees.*')) active @endif">
+          <a href="{{route('employees.index')}}" class="sidebar-link">
             <i class="bi bi-people-fill"></i>
-            <span>Gestion des <br>Employés</span>
+            <span>Gestion des <br>enseignants</span>
           </a>
-          <ul class="submenu @if(request()->routeIs('employees.*') || request()->routeIs('departments.*') || request()->routeIs('areas.*')) active @endif">
-            <li class="submenu-item @if(request()->routeIs('employees.*')) active @endif">
-              <a href="{{route('employees.index')}}">
-                <i class="bi bi-list-ul"></i>
-                <span>Liste des employés</span>
-              </a>
-            </li>
-            <li class="submenu-item @if(request()->routeIs('departments.*')) active @endif">
-              <a href="{{route('departments.index')}}">
-                <i class="bi bi-building"></i>
-                <span>Départements</span>
-              </a>
-            </li>
-            <li class="submenu-item @if(request()->routeIs('areas.*')) active @endif">
-              <a href="{{route('areas.index')}}">
-                <i class="bi bi-geo-alt"></i>
-                <span>Zones</span>
-              </a>
-            </li>
-          </ul>
         </li>
 
         <!-- Gestion des Plannings -->
@@ -262,6 +279,8 @@
             <span>Paramètres</span>
           </a>
         </li>
+
+        @endif
 
       </ul>
     </div>

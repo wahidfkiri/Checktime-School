@@ -8,7 +8,7 @@
             <div class="page-title">
                 <div class="row">
                     <div class="col-12 col-md-6 order-md-1 order-last">
-                        <h3>Liste des employés</h3>
+                        <h3>Liste des enseignants</h3>
                         <p class="text-subtitle text-muted">
                             <span id="sync-status">Chargement...</span>
                             <span id="last-sync-info" class="badge bg-light text-dark ms-2"></span>
@@ -20,7 +20,7 @@
                                 <li class="breadcrumb-item">
                                     <a href="{{ route('home') }}">Dashboard</a>
                                 </li>
-                                <li class="breadcrumb-item active">Employés</li>
+                                <li class="breadcrumb-item active">Enseignants</li>
                             </ol>
                         </nav>
                     </div>
@@ -31,18 +31,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="row align-items-end">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="zone_filter" class="form-label">Zone</label>
-                                    <select class="form-select" id="zone_filter">
-                                        <option value="">Toutes les zones</option>
-                                        @foreach($zones as $zone)
-                                            <option value="{{ $zone->area_id }}">{{ $zone->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="status_filter" class="form-label">Statut</label>
                                     <select class="form-select" id="status_filter">
@@ -53,9 +42,9 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="emp_code_filter" class="form-label">Code employé</label>
+                                    <label for="emp_code_filter" class="form-label">Code enseignant</label>
                                     <input type="text" class="form-control" id="emp_code_filter" placeholder="Code...">
                                 </div>
                             </div>
@@ -89,7 +78,7 @@
                                             <strong>Dernière synchro:</strong> <span id="last-sync"></span>
                                         </div>
                                         <div class="col-md-4">
-                                            <strong>Total employés:</strong> <span id="total-employees"></span>
+                                            <strong>Total enseignants:</strong> <span id="total-employees"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -111,11 +100,10 @@
                                     <tr>
                                         <th>Code</th>
                                         <th>Nom complet</th>
-                                        <th>Zone</th>
-                                        <th>Département</th>
                                         <th>Téléphone</th>
                                         <th>Email</th>
                                         <th>Statut</th>
+                                        <th>Compte</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -136,7 +124,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createEmployeeModalLabel">Créer un nouvel employé</h5>
+                <h5 class="modal-title" id="createEmployeeModalLabel">Créer un nouvel enseignant</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="createEmployeeForm">
@@ -181,38 +169,33 @@
                         </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="area_id" class="form-label">Zone</label>
-                                <select class="form-select" id="area_id" name="area_id">
-                                    <option value="">Sélectionner une zone</option>
-                                    @foreach($zones as $zone)
-                                        <option value="{{ $zone->area_id }}">{{ $zone->name }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback" id="area_id-error"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="department_id" class="form-label">Département</label>
-                                <select class="form-select" id="department_id" name="department_id">
-                                    <option value="">Sélectionner un département</option>
-                                    @foreach($departments as $department)
-                                        <option value="{{ $department->department_id }}">{{ $department->name }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback" id="department_id-error"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="mb-3">
                         <label for="address" class="form-label">Adresse</label>
                         <textarea class="form-control" id="address" name="address" rows="2" maxlength="500"></textarea>
                         <div class="invalid-feedback" id="address-error"></div>
                     </div>
+
+                    <hr>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-key me-1"></i> Accès à l'application (optionnel) — laissez vide pour ne pas créer de compte.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mot de passe</label>
+                                <input type="password" class="form-control" id="password" name="password" minlength="8">
+                                <div class="invalid-feedback" id="password-error"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" minlength="8">
+                                <div class="invalid-feedback" id="password_confirmation-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text mb-2">L'email ci-dessus servira d'identifiant de connexion.</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -231,7 +214,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editEmployeeModalLabel">Modifier l'employé</h5>
+                <h5 class="modal-title" id="editEmployeeModalLabel">Modifier l'enseignant</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="editEmployeeForm">
@@ -273,33 +256,6 @@
                                 </div>
                                 <div class="invalid-feedback" id="edit_phone-error"></div>
                                 <small class="form-text text-muted">Format attendu: +229 XX XX XX XX (10 chiffres après +229)</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit_area_id" class="form-label">Zone</label>
-                                <select class="form-select" id="edit_area_id" name="area_id">
-                                    <option value="">Sélectionner une zone</option>
-                                    @foreach($zones as $zone)
-                                        <option value="{{ $zone->area_id }}">{{ $zone->name }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback" id="edit_area_id-error"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit_department_id" class="form-label">Département</label>
-                                <select class="form-select" id="edit_department_id" name="department_id">
-                                    <option value="">Sélectionner un département</option>
-                                    @foreach($departments as $department)
-                                        <option value="{{ $department->department_id }}">{{ $department->name }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback" id="edit_department_id-error"></div>
                             </div>
                         </div>
                     </div>
@@ -356,7 +312,7 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header bg-primary text-white">
-                                    <h6 class="mb-0"><i class="bi bi-person-badge me-2"></i>Informations Employé</h6>
+                                    <h6 class="mb-0"><i class="bi bi-person-badge me-2"></i>Informations Enseignant</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-2">
@@ -475,7 +431,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer cet employé ?</p>
+                <p>Êtes-vous sûr de vouloir supprimer cet enseignant ?</p>
                 <p><strong>Code:</strong> <span id="delete-employee-code"></span></p>
                 <p><strong>Nom complet:</strong> <span id="delete-employee-name"></span></p>
                 <p class="text-danger"><small>Cette action est irréversible.</small></p>
@@ -491,6 +447,46 @@
     </div>
 </div>
 
+<!-- Modal de création d'accès enseignant -->
+<div class="modal fade" id="createAccessModal" tabindex="-1" aria-labelledby="createAccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAccessModalLabel">Créer un accès</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createAccessForm">
+                <input type="hidden" id="access_employee_id" name="employee_id">
+                <div class="modal-body">
+                    <p class="text-muted">Enseignant : <strong id="access-employee-name"></strong></p>
+                    <div class="mb-3">
+                        <label for="access_email" class="form-label">Email (identifiant de connexion) <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="access_email" name="email" required maxlength="255">
+                        <div class="invalid-feedback" id="access_email-error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="access_password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="access_password" name="password" required minlength="8">
+                        <div class="invalid-feedback" id="access_password-error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="access_password_confirmation" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="access_password_confirmation" name="password_confirmation" required minlength="8">
+                        <div class="invalid-feedback" id="access_password_confirmation-error"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="submit-create-access">
+                        <span id="create-access-text">Créer l'accès</span>
+                        <span id="create-access-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Bibliothèque intl-tel-input pour les numéros de téléphone avec drapeaux -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.0.10/css/intlTelInput.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.0.10/js/intlTelInput.min.js"></script>
@@ -500,7 +496,6 @@
 $(document).ready(function() {
     // Variables globales
     let employeeToDelete = null;
-    let departmentsCache = {};
     let phoneInputCreate = null;
     let phoneInputEdit = null;
     
@@ -640,7 +635,6 @@ $(document).ready(function() {
         ajax: {
             url: "{{ route('employees.local') }}",
             data: function (d) {
-                d.zone_id = $('#zone_filter').val();
                 d.emp_code = $('#emp_code_filter').val();
                 d.name = $('#name_filter').val();
                 d.status = $('#status_filter').val();
@@ -657,18 +651,8 @@ $(document).ready(function() {
                 name: 'full_name',
                 width: '20%'
             },
-            { 
-                data: 'area_name', 
-                name: 'area_name',
-                width: '15%'
-            },
-            { 
-                data: 'dept_name', 
-                name: 'dept_name',
-                width: '15%'
-            },
-            { 
-                data: 'phone', 
+            {
+                data: 'phone',
                 name: 'phone',
                 width: '10%',
                 render: function(data, type, row) {
@@ -715,13 +699,30 @@ $(document).ready(function() {
                 name: 'email',
                 width: '15%'
             },
-            { 
-                data: 'status_badge', 
+            {
+                data: 'status_badge',
                 name: 'status',
                 width: '10%'
             },
             {
-                data: null, 
+                data: null,
+                orderable: false,
+                searchable: false,
+                width: '10%',
+                render: function(data, type, row) {
+                    if (row.user_id) {
+                        return '<span class="badge bg-success">Actif</span>';
+                    }
+                    return `<button type="button" class="btn btn-sm btn-outline-primary create-access-btn"
+                                data-id="${row.id}"
+                                data-full_name="${row.full_name}"
+                                data-email="${row.email || ''}">
+                                <i class="bi bi-key me-1"></i> Créer un accès
+                            </button>`;
+                }
+            },
+            {
+                data: null,
                 orderable: false,
                 searchable: false,
                 width: '5%',
@@ -729,17 +730,13 @@ $(document).ready(function() {
                 render: function(data, type, row) {
     return `
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-sm btn-warning edit-employee-btn" 
+            <button type="button" class="btn btn-sm btn-warning edit-employee-btn"
                 data-id="${row.employee_id}"
                 data-emp_code="${row.emp_code}"
                 data-first_name="${row.first_name}"
                 data-last_name="${row.last_name}"
                 data-email="${row.email || ''}"
                 data-phone="${row.phone || ''}"
-                data-area_id="${row.area_id || ''}"
-                data-area_name="${row.area_name || ''}"
-                data-department_id="${row.department_id || ''}"
-                data-dept_name="${row.dept_name || ''}"
                 data-status="${row.status || ''}"
                 data-address="${row.address || ''}">
                 <i class="bi bi-pencil"></i>
@@ -751,7 +748,7 @@ $(document).ready(function() {
                 title="Vérification biométrique">
                 <i class="bi bi-fingerprint"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-danger delete-employee-btn" 
+            <button type="button" class="btn btn-sm btn-danger delete-employee-btn"
                 data-id="${row.employee_id}"
                 data-emp_code="${row.emp_code}"
                 data-full_name="${row.full_name}">
@@ -799,10 +796,6 @@ $(document).ready(function() {
             last_name:     $(this).data('last_name'),
             email:         $(this).data('email'),
             phone:         $(this).data('phone'),
-            area_id:       $(this).data('area_id'),
-            area_name:     $(this).data('area_name'),
-            department_id: $(this).data('department_id'),
-            dept_name:     $(this).data('dept_name'),
             status:        $(this).data('status'),
             address:       $(this).data('address')
         };
@@ -816,6 +809,16 @@ $(document).ready(function() {
             $(this).data('emp_code'),
             $(this).data('full_name')
         );
+    });
+
+    // Bouton Créer un accès
+    $(document).on('click', '.create-access-btn', function() {
+        $('#access_employee_id').val($(this).data('id'));
+        $('#access-employee-name').text($(this).data('full_name'));
+        $('#access_email').val($(this).data('email'));
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+        $('#createAccessModal').modal('show');
     });
 
     // Bouton Biométrique
@@ -983,190 +986,26 @@ $('#biometricModal').on('hidden.bs.modal', function() {
     $('#biometric-success-alert').hide();
     $('#biometric-error-alert').hide();
 });
-    // Charger les départements pour une zone
-    function loadDepartmentsForZone(zoneId, targetSelect, selectedId = null) {
-        if (departmentsCache[zoneId]) {
-            populateDepartmentSelect(targetSelect, departmentsCache[zoneId], selectedId);
-            return;
-        }
-        
-        $.ajax({
-            url: "{{ url('departments/by-zone') }}/" + zoneId,
-            type: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    departmentsCache[zoneId] = response.data;
-                    populateDepartmentSelect(targetSelect, response.data, selectedId);
-                }
-            },
-            error: function() {
-                // En cas d'erreur, laisser le select vide
-                $(targetSelect).html('<option value="">Sélectionner un département</option>');
-            }
-        });
-    }
-    
-    // Remplir le select des départements
-    function populateDepartmentSelect(selectElement, departments, selectedId = null) {
-        let html = '<option value="">Sélectionner un département</option>';
-        
-        departments.forEach(function(department) {
-            const selected = department.id == selectedId ? 'selected' : '';
-            html += `<option value="${department.id}" ${selected}>${department.name}</option>`;
-        });
-        
-        $(selectElement).html(html);
-    }
-    
     // Ouvrir la modal d'édition
- // Ouvrir la modal d'édition
-function openEditModal(employeeData) {
-    console.log('=== OPEN EDIT MODAL DEBUG ===');
-    console.log('Employee Data:', employeeData);
-    
-    // Remplir les champs du formulaire
-    $('#edit_employee_id').val(employeeData.id);
-    $('#edit_first_name').val(employeeData.first_name);
-    $('#edit_last_name').val(employeeData.last_name);
-    $('#edit_email').val(employeeData.email);
-    $('#edit_address').val(employeeData.address);
-    
-    // Debug: Afficher les données reçues
-    console.log('Area ID from data:', employeeData.area_id);
-    console.log('Department ID from data:', employeeData.department_id);
-    console.log('Area Name from button data:', $(this).data('area_name'));
-    console.log('Dept Name from button data:', $(this).data('dept_name'));
-    
-    const employeeZoneId   = employeeData.area_id;
-    const employeeZoneName = employeeData.area_name || '';
-    const employeeDeptId   = employeeData.department_id;
-    const employeeDeptName = employeeData.dept_name  || '';
-    
-    console.log('Final Zone Name:', employeeZoneName);
-    console.log('Final Dept Name:', employeeDeptName);
-    
-    // Afficher les options disponibles dans les selects
-    console.log('=== ZONE OPTIONS ===');
-    $('#edit_area_id option').each(function() {
-        console.log('Value:', $(this).val(), 'Text:', $(this).text());
-    });
-    
-    console.log('=== DEPARTMENT OPTIONS ===');
-    $('#edit_department_id option').each(function() {
-        console.log('Value:', $(this).val(), 'Text:', $(this).text());
-    });
-    
-    // Essayer de sélectionner par ID d'abord
-    console.log('Trying to select zone by ID:', employeeZoneId);
-    if (employeeZoneId) {
-        $('#edit_area_id').val(employeeZoneId);
-        const currentVal = $('#edit_area_id').val();
-        console.log('After setting zone by ID, current value:', currentVal);
-        
-        if (currentVal !== employeeZoneId) {
-            console.log('Zone ID not found, trying by name:', employeeZoneName);
-            selectByText('#edit_area_id', employeeZoneName);
-        } else {
-            console.log('Zone selected successfully by ID');
-        }
-    } else if (employeeZoneName) {
-        console.log('No zone ID, trying by name:', employeeZoneName);
-        selectByText('#edit_area_id', employeeZoneName);
-    } else {
-        $('#edit_area_id').val('');
-        console.log('No zone data available');
-    }
-    
-    // Même logique pour le département
-    console.log('Trying to select department by ID:', employeeDeptId);
-    if (employeeDeptId) {
-        $('#edit_department_id').val(employeeDeptId);
-        const currentVal = $('#edit_department_id').val();
-        console.log('After setting dept by ID, current value:', currentVal);
-        
-        if (currentVal !== employeeDeptId) {
-            console.log('Dept ID not found, trying by name:', employeeDeptName);
-            selectByText('#edit_department_id', employeeDeptName);
-        } else {
-            console.log('Dept selected successfully by ID');
-        }
-    } else if (employeeDeptName) {
-        console.log('No dept ID, trying by name:', employeeDeptName);
-        selectByText('#edit_department_id', employeeDeptName);
-    } else {
-        $('#edit_department_id').val('');
-        console.log('No department data available');
-    }
-    
-    // Vérifier les valeurs finales
-    console.log('Final zone select value:', $('#edit_area_id').val());
-    console.log('Final dept select value:', $('#edit_department_id').val());
-    
-    // Gérer le téléphone
-    if (employeeData.phone) {
-        console.log('Setting phone:', employeeData.phone);
-        phoneInputEdit.setNumber(employeeData.phone);
-    } else {
-        phoneInputEdit.setNumber('');
-    }
-    
-    // Réinitialiser les erreurs
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback').text('');
-    
-    $('#editEmployeeModal').modal('show');
-    console.log('=== END DEBUG ===');
-}
+    function openEditModal(employeeData) {
+        $('#edit_employee_id').val(employeeData.id);
+        $('#edit_first_name').val(employeeData.first_name);
+        $('#edit_last_name').val(employeeData.last_name);
+        $('#edit_email').val(employeeData.email);
+        $('#edit_address').val(employeeData.address);
 
-// Fonction utilitaire pour sélectionner une option par texte
-function selectByText(selectId, text) {
-    console.log(`selectByText called: ${selectId}, looking for: "${text}"`);
-    
-    if (!text) {
-        console.log('No text provided');
-        return;
-    }
-    
-    const searchText = text.trim().toLowerCase();
-    console.log('Searching for:', searchText);
-    
-    let found = false;
-    $(selectId + ' option').each(function(index) {
-        const optionText = $(this).text().trim().toLowerCase();
-        console.log(`Option ${index}: "${optionText}"`);
-        
-        if (optionText === searchText) {
-            console.log('Exact match found!');
-            $(this).prop('selected', true);
-            found = true;
-            return false;
+        if (employeeData.phone) {
+            phoneInputEdit.setNumber(employeeData.phone);
+        } else {
+            phoneInputEdit.setNumber('');
         }
-    });
-    
-    // Si non trouvé, essayer une correspondance partielle
-    if (!found) {
-        console.log('No exact match, trying partial match...');
-        $(selectId + ' option').each(function(index) {
-            const optionText = $(this).text().trim().toLowerCase();
-            
-            if (optionText.includes(searchText) || searchText.includes(optionText)) {
-                console.log(`Partial match found: "${optionText}"`);
-                $(this).prop('selected', true);
-                found = true;
-                return false;
-            }
-        });
+
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+
+        $('#editEmployeeModal').modal('show');
     }
-    
-    // Si toujours pas trouvé, désélectionner
-    if (!found) {
-        console.log('No match found at all');
-        $(selectId).val('');
-    } else {
-        console.log('Match found and selected');
-    }
-}
-    
+
     // Ouvrir la modal de suppression
     function openDeleteModal(id, empCode, fullName) {
         employeeToDelete = id;
@@ -1182,10 +1021,10 @@ function selectByText(selectId, text) {
 
     // Événements pour les filtres avec debounce
     var filterTimeout;
-    $('#zone_filter, #status_filter').on('change', function() {
+    $('#status_filter').on('change', function() {
         applyFilters();
     });
-    
+
     $('#emp_code_filter').on('keyup', function() {
         clearTimeout(filterTimeout);
         filterTimeout = setTimeout(applyFilters, 500);
@@ -1193,7 +1032,6 @@ function selectByText(selectId, text) {
 
     // Réinitialiser les filtres
     $('#reset_filters').on('click', function() {
-        $('#zone_filter').val('');
         $('#emp_code_filter').val('');
         $('#status_filter').val('');
         applyFilters();
@@ -1208,7 +1046,7 @@ function selectByText(selectId, text) {
     $('#reset_sync').on('click', function() {
         Swal.fire({
             title: 'Êtes-vous sûr ?',
-            text: "Tous les employés seront supprimés et resynchronisés. Cette action est irréversible.",
+            text: "Tous les enseignants seront supprimés et resynchronisés. Cette action est irréversible.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -1327,13 +1165,13 @@ function selectByText(selectId, text) {
             email: $('#email').val(),
             phone: fullPhone,
             phone_country_code: countryCode,
-            area_id: $('#area_id').val(),
-            department_id: $('#department_id').val(),
             status: $('#status').val(),
             address: $('#address').val(),
+            password: $('#password').val(),
+            password_confirmation: $('#password_confirmation').val(),
             _token: "{{ csrf_token() }}"
         };
-        
+
         // Désactiver le bouton et afficher le spinner
         $('#submit-create-employee').prop('disabled', true);
         $('#create-employee-text').addClass('d-none');
@@ -1355,16 +1193,15 @@ function selectByText(selectId, text) {
                     
                     // Réinitialiser le formulaire
                     $('#createEmployeeForm')[0].reset();
-                    $('#department_id').html('<option value="">Sélectionner un département</option>');
-                    
+
                     // Réinitialiser le champ téléphone
                     phoneInputCreate.setNumber('');
-                    
+
                     // Afficher un message de succès
                     Swal.fire({
                         icon: 'success',
                         title: 'Succès',
-                        text: response.message || 'Employé créé avec succès',
+                        text: response.message || 'Enseignant créé avec succès',
                         timer: 3000,
                         showConfirmButton: false
                     });
@@ -1403,6 +1240,79 @@ function selectByText(selectId, text) {
             }
         });
     });
+
+    // Gestion de la création d'accès enseignant
+    $('#createAccessForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const employeeId = $('#access_employee_id').val();
+
+        $('#submit-create-access').prop('disabled', true);
+        $('#create-access-text').addClass('d-none');
+        $('#create-access-spinner').removeClass('d-none');
+
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+
+        $.ajax({
+            url: "{{ url('employees') }}/" + employeeId + "/create-access",
+            type: 'POST',
+            data: {
+                email: $('#access_email').val(),
+                password: $('#access_password').val(),
+                password_confirmation: $('#access_password_confirmation').val(),
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#createAccessModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Succès',
+                        text: response.message || 'Accès créé avec succès',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    table.ajax.reload();
+                } else {
+                    showSweetAlert('error', 'Erreur', response.message);
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            var input = $('#access_' + key);
+                            input.addClass('is-invalid');
+                            input.next('.invalid-feedback').text(value[0]);
+                        });
+                    } else {
+                        showSweetAlert('error', 'Erreur', xhr.responseJSON.message);
+                    }
+                } else {
+                    showSweetAlert('error', 'Erreur',
+                        'Une erreur est survenue. ' + (xhr.responseJSON?.message || 'Veuillez réessayer.')
+                    );
+                }
+            },
+            complete: function() {
+                $('#submit-create-access').prop('disabled', false);
+                $('#create-access-text').removeClass('d-none');
+                $('#create-access-spinner').addClass('d-none');
+            }
+        });
+    });
+
+    // Réinitialiser la modal de création d'accès quand elle se ferme
+    $('#createAccessModal').on('hidden.bs.modal', function() {
+        $('#createAccessForm')[0].reset();
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+        $('#submit-create-access').prop('disabled', false);
+        $('#create-access-text').removeClass('d-none');
+        $('#create-access-spinner').addClass('d-none');
+    });
     
     // Gestion de l'édition d'employé
     $('#editEmployeeForm').on('submit', function(e) {
@@ -1430,8 +1340,6 @@ function selectByText(selectId, text) {
             email: $('#edit_email').val(),
             phone: fullPhone,
             phone_country_code: countryCode,
-            area_id: $('#edit_area_id').val(),
-            department_id: $('#edit_department_id').val(),
             address: $('#edit_address').val(),
             _token: "{{ csrf_token() }}"
         };
@@ -1459,7 +1367,7 @@ function selectByText(selectId, text) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Succès',
-                        text: response.message || 'Employé modifié avec succès',
+                        text: response.message || 'Enseignant modifié avec succès',
                         timer: 3000,
                         showConfirmButton: false
                     });
@@ -1527,7 +1435,7 @@ function selectByText(selectId, text) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Succès',
-                        text: response.message || 'Employé supprimé avec succès',
+                        text: response.message || 'Enseignant supprimé avec succès',
                         timer: 3000,
                         showConfirmButton: false
                     });
@@ -1566,7 +1474,6 @@ function selectByText(selectId, text) {
     // Réinitialiser le formulaire quand la modal de création se ferme
     $('#createEmployeeModal').on('hidden.bs.modal', function() {
         $('#createEmployeeForm')[0].reset();
-        $('#department_id').html('<option value="">Sélectionner un département</option>');
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
         $('#submit-create-employee').prop('disabled', false);

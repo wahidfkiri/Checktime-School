@@ -1,0 +1,747 @@
+/* ==========================================================================
+   CheckTime École — thème "solution scolaire"
+   Surcharge du thème Mazer/Bootstrap existant (chargé après app.css /
+   app-dark.css). Ne touche jamais au markup ni au JS : uniquement des
+   variables et des styles visuels, pour ne rien casser côté DataTables/modals.
+   ========================================================================== */
+
+:root {
+  /* Jetons de couleur */
+  --ct-ink: #16302B;
+  --ct-ink-soft: #1F3F37;
+  --ct-paper: #F6F3EA;
+  --ct-paper-raised: #FFFFFE;
+  --ct-rule: #E1DACA;
+  --ct-text: #1E2623;
+  --ct-text-muted: #5B665F;
+  --ct-brand: #2F6F62;
+  --ct-brand-soft: #E4EEEA;
+  --ct-gold: #A9782E;
+  --ct-gold-soft: #F3E7D2;
+  --ct-warning: #C97A2B;
+  --ct-warning-soft: #F6E4D2;
+  --ct-critical: #B4483D;
+  --ct-critical-soft: #F5DFDC;
+
+  --ct-font-display: "Lora", Georgia, "Iowan Old Style", serif;
+  --ct-font-body: "Public Sans", -apple-system, "Segoe UI", Arial, sans-serif;
+
+  /* Ré-alignement des variables Bootstrap 5.3 sur la nouvelle palette */
+  --bs-primary: var(--ct-brand);
+  --bs-primary-rgb: 47, 111, 98;
+  --bs-body-bg: var(--ct-paper);
+  --bs-body-color: var(--ct-text);
+  --bs-border-color: var(--ct-rule);
+  --bs-link-color: var(--ct-brand);
+  --bs-link-hover-color: #244F45;
+  --bs-body-font-family: var(--ct-font-body);
+}
+
+[data-bs-theme="dark"] {
+  --ct-ink: #0E211D;
+  --ct-ink-soft: #16302B;
+  --ct-paper: #12211D;
+  --ct-paper-raised: #1A2E28;
+  --ct-rule: #2B4640;
+  --ct-text: #EDEBE2;
+  --ct-text-muted: #A8B3AC;
+  --ct-brand: #5FA592;
+  --ct-brand-soft: #1E3B34;
+  --ct-gold: #D3A75C;
+  --ct-gold-soft: #3A2F1C;
+  --ct-warning: #E0A15C;
+  --ct-warning-soft: #3B2A18;
+  --ct-critical: #E08277;
+  --ct-critical-soft: #3D211E;
+
+  --bs-body-bg: var(--ct-paper);
+  --bs-body-color: var(--ct-text);
+  --bs-border-color: var(--ct-rule);
+}
+
+body {
+  background: var(--ct-paper) !important;
+  color: var(--ct-text);
+  font-family: var(--ct-font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, h4, h5, h6,
+.page-title h3,
+.modal-title,
+.card-header h5, .card-header h6 {
+  font-family: var(--ct-font-display);
+  letter-spacing: 0.002em;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Sidebar                                                                 */
+/* ---------------------------------------------------------------------- */
+#sidebar .sidebar-wrapper {
+  background: var(--ct-ink) !important;
+}
+
+#sidebar .sidebar-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-title {
+  color: #7FA093 !important;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+.sidebar-item .sidebar-link,
+.sidebar-item .sidebar-link i {
+  color: #D9E4DD !important;
+}
+
+.sidebar-item .sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #fff !important;
+}
+
+.sidebar-item.active > .sidebar-link,
+.sidebar-item .sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  position: relative;
+}
+
+.sidebar-item.active > .sidebar-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--ct-gold);
+}
+
+.submenu .submenu-item a {
+  color: #C6D6CE !important;
+}
+
+.submenu .submenu-item a:hover,
+.submenu .submenu-item.active a {
+  color: #fff !important;
+}
+
+.submenu .submenu-item.active a {
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Barre du haut                                                          */
+/* ---------------------------------------------------------------------- */
+.navbar-top {
+  background: var(--ct-paper-raised) !important;
+  border-bottom: 1px solid var(--ct-rule);
+}
+
+.user-menu .avatar span {
+  background-color: var(--ct-brand) !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* En-tête de page / fil d'Ariane                                         */
+/* ---------------------------------------------------------------------- */
+.page-title h3 {
+  color: var(--ct-ink);
+}
+
+[data-bs-theme="dark"] .page-title h3 {
+  color: var(--ct-text);
+}
+
+.breadcrumb-item a {
+  color: var(--ct-text-muted);
+}
+.breadcrumb-item.active {
+  color: var(--ct-text);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Cartes                                                                 */
+/* ---------------------------------------------------------------------- */
+.card {
+  background: var(--ct-paper-raised);
+  border: 1px solid var(--ct-rule);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.card-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--ct-rule) !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Boutons                                                                */
+/* ---------------------------------------------------------------------- */
+.btn-primary {
+  --bs-btn-bg: var(--ct-brand);
+  --bs-btn-border-color: var(--ct-brand);
+  --bs-btn-hover-bg: #244F45;
+  --bs-btn-hover-border-color: #244F45;
+  --bs-btn-active-bg: #1D4038;
+  --bs-btn-active-border-color: #1D4038;
+}
+
+.btn-success {
+  --bs-btn-bg: var(--ct-brand);
+  --bs-btn-border-color: var(--ct-brand);
+  --bs-btn-hover-bg: #244F45;
+  --bs-btn-hover-border-color: #244F45;
+}
+
+.btn-warning {
+  --bs-btn-bg: var(--ct-warning);
+  --bs-btn-border-color: var(--ct-warning);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+}
+
+.btn-danger {
+  --bs-btn-bg: var(--ct-critical);
+  --bs-btn-border-color: var(--ct-critical);
+}
+
+.btn, .form-control, .form-select {
+  border-radius: 8px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Badges — pastilles douces plutôt que blocs pleins                     */
+/* ---------------------------------------------------------------------- */
+.badge.bg-success {
+  background-color: var(--ct-brand-soft) !important;
+  color: var(--ct-brand) !important;
+  font-weight: 600;
+}
+.badge.bg-danger {
+  background-color: var(--ct-critical-soft) !important;
+  color: var(--ct-critical) !important;
+  font-weight: 600;
+}
+.badge.bg-warning {
+  background-color: var(--ct-warning-soft) !important;
+  color: var(--ct-warning) !important;
+  font-weight: 600;
+}
+.badge.bg-secondary {
+  background-color: var(--ct-rule) !important;
+  color: var(--ct-text-muted) !important;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Tableaux / DataTables                                                  */
+/* ---------------------------------------------------------------------- */
+.table thead th,
+table.dataTable thead th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ct-text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ct-rule) !important;
+  background: transparent !important;
+}
+
+.table td, table.dataTable td,
+.table th, table.dataTable th {
+  border-color: var(--ct-rule) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: color-mix(in srgb, var(--ct-brand-soft) 45%, transparent);
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: var(--ct-brand-soft);
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  border-radius: 8px;
+  border-color: var(--ct-rule);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Modals                                                                 */
+/* ---------------------------------------------------------------------- */
+.modal-content {
+  border-radius: 12px !important;
+  border: 1px solid var(--ct-rule);
+}
+.modal-header {
+  background: var(--ct-paper) !important;
+  border-bottom: 1px solid var(--ct-rule) !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Interrupteur clair / sombre (branché sur le mécanisme Mazer existant)  */
+/* ---------------------------------------------------------------------- */
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ct-text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+.theme-switch input {
+  appearance: none;
+  width: 34px;
+  height: 19px;
+  border-radius: 999px;
+  background: var(--ct-rule);
+  position: relative;
+  cursor: pointer;
+  margin: 0;
+  transition: background-color 0.15s ease;
+}
+.theme-switch input::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+.theme-switch input:checked {
+  background: var(--ct-brand);
+}
+.theme-switch input:checked::before {
+  transform: translateX(15px);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Typographie & liens                                                    */
+/* ---------------------------------------------------------------------- */
+p, .text-body {
+  color: var(--ct-text);
+}
+
+.text-muted, .text-gray-600 {
+  color: var(--ct-text-muted) !important;
+}
+
+small, .text-sm {
+  letter-spacing: 0.01em;
+}
+
+a {
+  color: var(--ct-brand);
+  text-decoration: none;
+}
+a:hover {
+  color: #21493F;
+  text-decoration: underline;
+}
+[data-bs-theme="dark"] a:hover {
+  color: #86C4B3;
+}
+
+/* focus visible partout : accessibilité + cohérence de marque */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--ct-brand);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Icônes (Bootstrap Icons)                                               */
+/* ---------------------------------------------------------------------- */
+.sidebar-link i,
+.card-header i,
+.page-title i {
+  color: inherit;
+}
+
+.text-muted i, i.text-muted {
+  color: var(--ct-text-muted) !important;
+}
+
+/* icônes "sémantiques" isolées dans les cartes de stats / listes */
+.bi-fingerprint, .bi-shield-check { color: var(--ct-brand); }
+.bi-exclamation-triangle { color: var(--ct-warning); }
+.bi-x-circle, .bi-trash { color: var(--ct-critical); }
+
+/* ---------------------------------------------------------------------- */
+/* Formulaires & champs                                                   */
+/* ---------------------------------------------------------------------- */
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ct-text);
+  margin-bottom: 6px;
+}
+
+.form-control, .form-select {
+  background-color: var(--ct-paper-raised);
+  border: 1px solid var(--ct-rule);
+  color: var(--ct-text);
+  font-size: 13.5px;
+  padding: 8px 12px;
+}
+
+.form-control::placeholder {
+  color: #9AA39B;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--ct-brand);
+  box-shadow: 0 0 0 3px var(--ct-brand-soft);
+}
+
+.form-control:disabled, .form-select:disabled {
+  background-color: var(--ct-rule);
+  opacity: 0.6;
+}
+
+.form-check-input {
+  border: 1px solid var(--ct-rule);
+}
+.form-check-input:checked {
+  background-color: var(--ct-brand);
+  border-color: var(--ct-brand);
+}
+.form-check-input:focus {
+  border-color: var(--ct-brand);
+  box-shadow: 0 0 0 3px var(--ct-brand-soft);
+}
+
+.form-switch .form-check-input:checked {
+  background-color: var(--ct-brand);
+  border-color: var(--ct-brand);
+}
+
+.invalid-feedback {
+  color: var(--ct-critical);
+  font-size: 12px;
+  font-weight: 500;
+}
+.is-invalid, .form-control.is-invalid, .form-select.is-invalid {
+  border-color: var(--ct-critical) !important;
+}
+.is-invalid:focus {
+  box-shadow: 0 0 0 3px var(--ct-critical-soft) !important;
+}
+
+.input-group-text {
+  background: var(--ct-paper);
+  border-color: var(--ct-rule);
+  color: var(--ct-text-muted);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Boutons — variantes, tailles, groupes                                  */
+/* ---------------------------------------------------------------------- */
+.btn {
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.01em;
+}
+
+.btn-secondary {
+  --bs-btn-bg: var(--ct-paper-raised);
+  --bs-btn-border-color: var(--ct-rule);
+  --bs-btn-color: var(--ct-text);
+  --bs-btn-hover-bg: var(--ct-rule);
+  --bs-btn-hover-color: var(--ct-text);
+  --bs-btn-hover-border-color: var(--ct-rule);
+}
+
+.btn-info {
+  --bs-btn-bg: var(--ct-brand-soft);
+  --bs-btn-color: var(--ct-brand);
+  --bs-btn-border-color: var(--ct-brand-soft);
+  --bs-btn-hover-bg: var(--ct-brand);
+  --bs-btn-hover-color: #fff;
+}
+
+.btn-outline-primary, .btn-outline-secondary {
+  --bs-btn-color: var(--ct-brand);
+  --bs-btn-border-color: var(--ct-brand);
+  --bs-btn-hover-bg: var(--ct-brand);
+  --bs-btn-hover-border-color: var(--ct-brand);
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+.btn-lg {
+  border-radius: 10px;
+}
+
+.btn-group .btn {
+  border-radius: 7px !important;
+}
+.btn-group .btn + .btn {
+  margin-left: 3px;
+}
+
+.btn:disabled, .btn.disabled {
+  opacity: 0.55;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Badges — ajustements fins                                              */
+/* ---------------------------------------------------------------------- */
+.badge {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.42em 0.7em;
+  border-radius: 6px;
+}
+
+.badge.bg-primary {
+  background-color: var(--ct-brand-soft) !important;
+  color: var(--ct-brand) !important;
+}
+.badge.bg-info {
+  background-color: var(--ct-gold-soft) !important;
+  color: var(--ct-gold) !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Tableaux / DataTables — approfondi                                     */
+/* ---------------------------------------------------------------------- */
+.table {
+  --bs-table-color: var(--ct-text);
+}
+
+.table td {
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: background-color 0.1s ease;
+}
+
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_filter label {
+  color: var(--ct-text-muted);
+  font-size: 12.5px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  border-radius: 7px !important;
+  margin: 0 2px;
+  color: var(--ct-text) !important;
+  border: 1px solid transparent !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: var(--ct-brand-soft) !important;
+  border-color: var(--ct-brand-soft) !important;
+  color: var(--ct-brand) !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--ct-brand) !important;
+  border-color: var(--ct-brand) !important;
+  color: #fff !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  color: var(--ct-text-muted) !important;
+  opacity: 0.5;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+  color: var(--ct-text-muted);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Modals — approfondi                                                    */
+/* ---------------------------------------------------------------------- */
+.modal-footer {
+  background: transparent;
+  border-top: 1px solid var(--ct-rule) !important;
+}
+
+.modal-backdrop.show {
+  opacity: 0.55;
+}
+
+.modal .btn-close {
+  opacity: 0.6;
+}
+.modal .btn-close:hover {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Alertes                                                                */
+/* ---------------------------------------------------------------------- */
+.alert {
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 13.5px;
+}
+.alert-info {
+  background-color: var(--ct-brand-soft);
+  color: var(--ct-brand);
+  border-color: var(--ct-brand-soft);
+}
+.alert-warning {
+  background-color: var(--ct-warning-soft);
+  color: var(--ct-warning);
+  border-color: var(--ct-warning-soft);
+}
+.alert-danger {
+  background-color: var(--ct-critical-soft);
+  color: var(--ct-critical);
+  border-color: var(--ct-critical-soft);
+}
+.alert-success {
+  background-color: var(--ct-brand-soft);
+  color: var(--ct-brand);
+  border-color: var(--ct-brand-soft);
+}
+.alert-light {
+  background-color: var(--ct-paper);
+  border-color: var(--ct-rule);
+  color: var(--ct-text);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Menus déroulants                                                       */
+/* ---------------------------------------------------------------------- */
+.dropdown-menu {
+  background: var(--ct-paper-raised);
+  border: 1px solid var(--ct-rule);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(22, 48, 43, 0.14);
+  padding: 6px;
+}
+.dropdown-item {
+  border-radius: 7px;
+  font-size: 13.5px;
+  color: var(--ct-text);
+  padding: 8px 12px;
+}
+.dropdown-item:hover, .dropdown-item:focus {
+  background-color: var(--ct-brand-soft);
+  color: var(--ct-brand);
+}
+.dropdown-divider {
+  border-color: var(--ct-rule);
+}
+.dropdown-header {
+  color: var(--ct-text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Barres de progression                                                  */
+/* ---------------------------------------------------------------------- */
+.progress {
+  background-color: var(--ct-rule);
+  border-radius: 999px;
+}
+.progress-bar {
+  background-color: var(--ct-brand);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Tooltips                                                               */
+/* ---------------------------------------------------------------------- */
+.tooltip .tooltip-inner {
+  background: var(--ct-ink);
+  font-family: var(--ct-font-body);
+  font-size: 12px;
+  border-radius: 7px;
+  padding: 6px 10px;
+}
+.tooltip .tooltip-arrow::before {
+  border-top-color: var(--ct-ink);
+}
+
+/* ---------------------------------------------------------------------- */
+/* SweetAlert2 — popups & toasts                                          */
+/* ---------------------------------------------------------------------- */
+.swal2-popup {
+  border-radius: 14px !important;
+  font-family: var(--ct-font-body) !important;
+}
+.swal2-title {
+  font-family: var(--ct-font-display) !important;
+  font-size: 20px !important;
+  color: var(--ct-ink) !important;
+}
+[data-bs-theme="dark"] .swal2-title {
+  color: var(--ct-text) !important;
+}
+.swal2-html-container {
+  font-size: 14px !important;
+  color: var(--ct-text-muted) !important;
+}
+.swal2-confirm {
+  background-color: var(--ct-brand) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+.swal2-cancel {
+  background-color: var(--ct-rule) !important;
+  color: var(--ct-text) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+.swal2-icon.swal2-success {
+  border-color: var(--ct-brand) !important;
+  color: var(--ct-brand) !important;
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--ct-brand) !important;
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: var(--ct-brand-soft) !important;
+}
+.swal2-icon.swal2-error {
+  border-color: var(--ct-critical) !important;
+  color: var(--ct-critical) !important;
+}
+.swal2-icon.swal2-warning {
+  border-color: var(--ct-warning) !important;
+  color: var(--ct-warning) !important;
+}
+.swal2-icon.swal2-info {
+  border-color: var(--ct-brand) !important;
+  color: var(--ct-brand) !important;
+}
+
+.swal2-toast {
+  border-radius: 10px !important;
+  background: var(--ct-paper-raised) !important;
+  box-shadow: 0 8px 24px rgba(22, 48, 43, 0.16) !important;
+}
+.swal2-toast .swal2-title {
+  font-family: var(--ct-font-body) !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+}
+.swal2-timer-progress-bar {
+  background: var(--ct-brand) !important;
+}

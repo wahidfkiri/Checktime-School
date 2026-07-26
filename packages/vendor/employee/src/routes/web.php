@@ -52,6 +52,7 @@ Route::prefix('employees')->name('employees.')->group(function () {
     Route::post('/force-sync', [EmployeeController::class, 'forceSync'])->name('force-sync');
     Route::get('/status', [EmployeeController::class, 'syncStatus'])->name('status');
     Route::post('/reset', [EmployeeController::class, 'resetAndSync'])->name('reset');
+    Route::post('/{id}/create-access', [EmployeeController::class, 'createAccess'])->name('create-access');
 });
 
 

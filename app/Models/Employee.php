@@ -10,6 +10,7 @@ class Employee extends Model
 {
     protected $fillable = [
         'client_id',
+        'user_id',
         'employee_id',
         'emp_code',
         'first_name',
@@ -33,6 +34,11 @@ class Employee extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function zone(): BelongsTo
