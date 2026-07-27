@@ -62,10 +62,19 @@ class ClientController extends Controller
                 $clientName = htmlspecialchars($client->raison_sociale, ENT_QUOTES, 'UTF-8');
                 
                 $html = '<div class="btn-group" role="group" style="gap: 3px;">';
-                
+
+                // Bouton Synchroniser (biométrie)
+                $html .= '<button type="button"
+                            class="btn btn-sm btn-primary sync-client-btn"
+                            data-id="' . $client->id . '"
+                            data-name="' . $clientName . '"
+                            title="Synchroniser la biométrie">
+                            <i class="bi bi-arrow-repeat"></i>
+                         </button>';
+
                 // Bouton Éditer
-                $html .= '<button type="button" 
-                            class="btn btn-sm btn-info edit-client-btn" 
+                $html .= '<button type="button"
+                            class="btn btn-sm btn-info edit-client-btn"
                             data-id="' . $client->id . '"
                             title="Modifier">
                             <i class="bi bi-pencil"></i>

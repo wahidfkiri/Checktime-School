@@ -464,7 +464,7 @@ public function destroy($id)
     /**
      * Synchronise les employés pour un client
      */
-    private function syncEmployeesForClient($config): int
+    public function syncEmployeesForClient($config): int
     {
         $clientId = $config->client_id;
         $token = $config->general_token;

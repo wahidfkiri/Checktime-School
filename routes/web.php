@@ -77,6 +77,10 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth','web','role:super-admin'])->group(function () {
     Route::get('/super-admin/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
 
+    // Synchronisation biométrique déclenchée par le super-admin
+    Route::post('/super-admin/schools/sync-all', [SuperAdminController::class, 'syncAll'])->name('super-admin.schools.sync-all');
+    Route::post('/super-admin/schools/{client}/sync', [SuperAdminController::class, 'syncSchool'])->name('super-admin.schools.sync');
+
     // Gestion des écoles (clients) — CRUD complet
     Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
     Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
@@ -87,6 +91,18 @@ Route::middleware(['auth','web','role:super-admin'])->group(function () {
     Route::put('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
     Route::delete('/clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
     Route::post('/clients/{client}/toggle-status', [ClientController::class, 'toggleStatus'])->name('clients.toggle-status');
+
+    // Supervision globale (lecture seule, toutes écoles)
+    Route::prefix('super-admin/supervision')->name('super-admin.supervision.')->group(function () {
+        Route::get('/teachers', [SuperAdminController::class, 'teachers'])->name('teachers');
+        Route::get('/teachers/data', [SuperAdminController::class, 'teachersData'])->name('teachers.data');
+        Route::get('/devices', [SuperAdminController::class, 'devices'])->name('devices');
+        Route::get('/devices/data', [SuperAdminController::class, 'devicesData'])->name('devices.data');
+        Route::get('/zones', [SuperAdminController::class, 'zones'])->name('zones');
+        Route::get('/zones/data', [SuperAdminController::class, 'zonesData'])->name('zones.data');
+        Route::get('/departments', [SuperAdminController::class, 'departments'])->name('departments');
+        Route::get('/departments/data', [SuperAdminController::class, 'departmentsData'])->name('departments.data');
+    });
 });
 
 Route::middleware(['auth','web', 'role:client','client.active'])->group(function () {

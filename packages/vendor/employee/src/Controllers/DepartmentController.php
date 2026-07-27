@@ -298,7 +298,7 @@ public function destroy($id)
     /**
      * Synchronise les départements pour le client spécifié
      */
-    private function syncDepartmentsForClientNow(int $clientId): int
+    public function syncDepartmentsForClientNow(int $clientId): int
     {
         try {
             Log::info("Début de la synchronisation des départements pour le client {$clientId}");

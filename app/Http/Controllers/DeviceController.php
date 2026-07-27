@@ -77,7 +77,7 @@ class DeviceController extends Controller
     /**
      * Synchronise les devices pour le client spécifié
      */
-    private function syncDevicesForClientNow(int $clientId): int
+    public function syncDevicesForClientNow(int $clientId): int
     {
         try {
             Log::info("Début de la synchronisation des devices pour le client {$clientId}");

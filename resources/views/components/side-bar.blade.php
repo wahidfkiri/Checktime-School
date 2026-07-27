@@ -30,6 +30,38 @@
             <span>Gestion des <br>écoles</span>
           </a>
         </li>
+        <li class="sidebar-item has-sub @if(request()->routeIs('super-admin.supervision.*')) active @endif">
+          <a href="#" class="sidebar-link">
+            <i class="bi bi-eye"></i>
+            <span>Supervision</span>
+          </a>
+          <ul class="submenu @if(request()->routeIs('super-admin.supervision.*')) active @endif">
+            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.teachers')) active @endif">
+              <a href="{{route('super-admin.supervision.teachers')}}">
+                <i class="bi bi-mortarboard"></i>
+                <span>Enseignants</span>
+              </a>
+            </li>
+            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.devices')) active @endif">
+              <a href="{{route('super-admin.supervision.devices')}}">
+                <i class="bi bi-hdd"></i>
+                <span>Appareils</span>
+              </a>
+            </li>
+            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.zones')) active @endif">
+              <a href="{{route('super-admin.supervision.zones')}}">
+                <i class="bi bi-geo-alt"></i>
+                <span>Zones</span>
+              </a>
+            </li>
+            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.departments')) active @endif">
+              <a href="{{route('super-admin.supervision.departments')}}">
+                <i class="bi bi-diagram-3"></i>
+                <span>Départements</span>
+              </a>
+            </li>
+          </ul>
+        </li>
 
         @elseif(auth()->user()->hasRole('employee'))
         <!-- Menu enseignant : module school limité à ses propres données -->

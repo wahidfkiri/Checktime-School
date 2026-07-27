@@ -312,7 +312,7 @@ public function destroy($id)
     /**
      * Synchronise les zones pour le client spécifié
      */
-    private function syncZonesForClientNow(int $clientId): int
+    public function syncZonesForClientNow(int $clientId): int
     {
         try {
             Log::info("Début de la synchronisation des zones pour le client {$clientId}");

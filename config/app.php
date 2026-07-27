@@ -201,7 +201,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\TelescopeServiceProvider::class,
+        // Telescope est enregistré uniquement en local via AppServiceProvider::register()
         App\Providers\SmsServiceProvider::class,
 
     ],
