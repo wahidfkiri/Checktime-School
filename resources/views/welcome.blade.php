@@ -66,7 +66,7 @@
         .nav { display: flex; align-items: center; justify-content: space-between; height: 92px; }
         .brand-logo { display: flex; align-items: center; gap: 12px; font-family: 'Sora'; font-weight: 700; font-size: 1.15rem; color: var(--ink); }
         .brand-logo img { height: 42px; width: auto; }
-        .brand-logo img.logo-lg { height: 70px; }
+        .brand-logo img.logo-lg { height: 130px; }
         .nav-links { display: flex; align-items: center; gap: 34px; }
         .nav-links a { font-weight: 500; font-size: .95rem; color: var(--muted); transition: color .2s; }
         .nav-links a:hover { color: var(--brand); }
