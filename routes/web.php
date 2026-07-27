@@ -46,8 +46,8 @@ Route::get('/welcome', function () {
 });
 
 Route::get('/', function () {
-    return view('auth.login');
-})->middleware('guest');
+    return view('welcome');
+});
 
 
 

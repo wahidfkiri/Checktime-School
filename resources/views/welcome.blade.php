@@ -3,759 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CheckTime - Application de Gestion de Pointage</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>CheckTime École — Pointage & paie des vacations scolaires</title>
+    <meta name="description" content="CheckTime École : plateforme de pointage biométrique des enseignants vacataires — planning des vacations, calcul automatique des heures et de la paie, rapports et supervision multi-écoles.">
+    <link rel="icon" href="{{ asset('logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
-            --primary: #4a6bff;
-            --primary-dark: #3a56d4;
-            --secondary: #6c757d;
-            --success: #28a745;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #e9ecef;
-            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            --radius: 10px;
-            --transition: all 0.3s ease;
+            --brand: #2F6F62;
+            --brand-dark: #16302B;
+            --ink: #0E211D;
+            --gold: #A9782E;
+            --gold-soft: #F3E7D2;
+            --critical: #B4483D;
+            --paper: #F6F3EA;
+            --paper-raised: #FFFFFF;
+            --text: #1E2623;
+            --muted: #5B665F;
+            --rule: #E1DACA;
+            --brand-soft: #E4EEEA;
+            --shadow: 0 18px 50px -20px rgba(14, 33, 29, .35);
+            --radius: 18px;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text);
+            background: var(--paper);
             line-height: 1.6;
-            color: var(--dark);
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            line-height: 1.3;
-            margin-bottom: 1rem;
+        h1, h2, h3, .display { font-family: 'Sora', sans-serif; letter-spacing: -0.02em; }
+        a { text-decoration: none; color: inherit; }
+        .wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+            color: var(--gold); background: var(--gold-soft);
+            padding: 6px 14px; border-radius: 100px;
         }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
         .btn {
-            display: inline-block;
-            padding: 12px 28px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: var(--radius);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: .95rem;
+            padding: 13px 24px; border-radius: 100px; border: 1.5px solid transparent;
+            cursor: pointer; transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
         }
-        
-        .btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-        }
-        
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .btn-secondary:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        /* Header */
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--brand); color: #fff; box-shadow: 0 10px 24px -10px rgba(47,111,98,.7); }
+        .btn-primary:hover { background: #276055; }
+        .btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.35); }
+        .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,.08); }
+
+        /* ===== NAV ===== */
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px 0;
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(246,243,234,.82); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--rule);
         }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .logo i {
-            font-size: 28px;
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-        
-        nav ul li {
-            margin-left: 30px;
-        }
-        
-        nav ul li a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: var(--transition);
-        }
-        
-        nav ul li a:hover {
-            color: var(--primary);
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--dark);
-            cursor: pointer;
-        }
-        
-        /* Hero Section */
+        .nav { display: flex; align-items: center; justify-content: space-between; height: 74px; }
+        .brand-logo { display: flex; align-items: center; gap: 12px; font-family: 'Sora'; font-weight: 700; font-size: 1.15rem; color: var(--ink); }
+        .brand-logo img { height: 42px; width: auto; }
+        .nav-links { display: flex; align-items: center; gap: 34px; }
+        .nav-links a { font-weight: 500; font-size: .95rem; color: var(--muted); transition: color .2s; }
+        .nav-links a:hover { color: var(--brand); }
+
+        /* ===== HERO ===== */
         .hero {
-            padding: 150px 0 100px;
-            background: linear-gradient(135deg, #f5f7ff 0%, #eef1ff 100%);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
+            background: radial-gradient(1100px 500px at 78% -10%, #24544A 0%, transparent 55%),
+                        linear-gradient(160deg, #0E211D 0%, #16302B 60%, #1B392F 100%);
+            color: #fff;
         }
-        
-        .hero-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 40px;
+        .hero::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0);
+            background-size: 34px 34px; pointer-events: none;
         }
-        
-        .hero-text {
-            flex: 1;
+        .hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; padding: 92px 0 108px; }
+        .hero h1 { font-size: clamp(2.3rem, 4.6vw, 3.5rem); font-weight: 800; line-height: 1.08; margin: 22px 0 20px; }
+        .hero h1 .accent { color: #6FC0AC; }
+        .hero p.lead { font-size: 1.14rem; color: #C7D5CF; max-width: 540px; margin-bottom: 34px; }
+        .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
+        .hero .eyebrow { color: #EAD4A8; background: rgba(169,120,46,.18); }
+        .hero-stats { display: flex; gap: 30px; margin-top: 46px; flex-wrap: wrap; }
+        .hero-stats .s .n { font-family: 'Sora'; font-weight: 700; font-size: 1.6rem; color: #fff; }
+        .hero-stats .s .l { font-size: .82rem; color: #9FB3AB; }
+
+        /* Preview card */
+        .preview { position: relative; }
+        .pv-card {
+            background: #fff; color: var(--text); border-radius: var(--radius);
+            box-shadow: var(--shadow); padding: 22px; transform: rotate(-1.5deg);
         }
-        
-        .hero-text h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: var(--dark);
+        .pv-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid var(--rule); margin-bottom: 16px; }
+        .pv-head .t { font-family: 'Sora'; font-weight: 700; font-size: 1rem; }
+        .pv-badge { font-size: .72rem; font-weight: 600; color: var(--brand); background: var(--brand-soft); padding: 4px 10px; border-radius: 100px; }
+        .pv-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; font-size: .9rem; }
+        .pv-row .lbl { color: var(--muted); display: flex; align-items: center; gap: 9px; }
+        .pv-row .lbl i { color: var(--brand); }
+        .pv-row .val { font-weight: 600; }
+        .pv-total { margin-top: 10px; padding-top: 14px; border-top: 2px solid var(--ink); display: flex; align-items: center; justify-content: space-between; }
+        .pv-total .val { font-family: 'Sora'; font-weight: 800; font-size: 1.35rem; color: var(--brand); }
+        .pv-float {
+            position: absolute; bottom: -26px; left: -26px; background: #fff; border-radius: 14px;
+            box-shadow: var(--shadow); padding: 14px 18px; display: flex; align-items: center; gap: 12px; transform: rotate(2deg);
         }
-        
-        .hero-text p {
-            font-size: 1.2rem;
-            color: var(--secondary);
-            margin-bottom: 30px;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .hero-image {
-            flex: 1;
-            position: relative;
-        }
-        
-        .hero-image img {
-            max-width: 100%;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-        
+        .pv-float .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--gold-soft); color: var(--gold); display: grid; place-items: center; font-size: 1.2rem; }
+        .pv-float .n { font-family: 'Sora'; font-weight: 700; font-size: 1.05rem; line-height: 1; }
+        .pv-float .l { font-size: .74rem; color: var(--muted); }
+
+        /* ===== SECTIONS ===== */
+        section { padding: 92px 0; }
+        .sec-head { text-align: center; max-width: 660px; margin: 0 auto 56px; }
+        .sec-head h2 { font-size: clamp(1.9rem, 3.4vw, 2.6rem); font-weight: 700; margin: 16px 0 14px; }
+        .sec-head p { color: var(--muted); font-size: 1.08rem; }
+
         /* Features */
-        .features {
-            padding: 100px 0;
+        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .feat {
+            background: var(--paper-raised); border: 1px solid var(--rule); border-radius: var(--radius);
+            padding: 30px; transition: transform .2s ease, box-shadow .2s ease, border-color .2s;
         }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--dark);
-            position: relative;
-            display: inline-block;
-        }
-        
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            width: 70px;
-            height: 4px;
-            background-color: var(--primary);
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background-color: white;
-            border-radius: var(--radius);
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background-color: rgba(74, 107, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-        }
-        
-        .feature-icon i {
-            font-size: 36px;
-            color: var(--primary);
-        }
-        
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        
+        .feat:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: transparent; }
+        .feat .ic { width: 54px; height: 54px; border-radius: 14px; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 20px; }
+        .feat.gold .ic { background: var(--gold-soft); color: var(--gold); }
+        .feat h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; }
+        .feat p { color: var(--muted); font-size: .95rem; }
+
         /* How it works */
-        .how-it-works {
-            padding: 100px 0;
-            background-color: var(--light);
-        }
-        
-        .steps {
-            display: flex;
-            justify-content: space-between;
-            gap: 30px;
-            margin-top: 50px;
-        }
-        
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-        
-        .step-number {
-            width: 60px;
-            height: 60px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0 auto 25px;
-            z-index: 2;
-            position: relative;
-        }
-        
-        .step h3 {
-            margin-bottom: 15px;
-        }
-        
-        .step:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            width: calc(100% - 60px);
-            height: 2px;
-            background-color: var(--gray);
-            top: 30px;
-            left: calc(50% + 30px);
-            z-index: 1;
-        }
-        
-        /* CTA */
-        .cta {
-            padding: 100px 0;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-align: center;
-        }
-        
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        
-        .cta p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto 40px;
-            opacity: 0.9;
-        }
-        
-        .cta .btn {
-            background-color: white;
-            color: var(--primary);
-        }
-        
-        .cta .btn:hover {
-            background-color: var(--light);
-        }
-        
+        .how { background: linear-gradient(180deg, #fff 0%, var(--paper) 100%); }
+        .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+        .step { position: relative; padding: 30px 22px; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: var(--radius); }
+        .step .num { font-family: 'Sora'; font-weight: 800; font-size: 1.05rem; width: 40px; height: 40px; border-radius: 12px; background: var(--ink); color: #fff; display: grid; place-items: center; margin-bottom: 18px; }
+        .step h3 { font-size: 1.05rem; margin-bottom: 8px; }
+        .step p { color: var(--muted); font-size: .9rem; }
+
+        /* Roles */
+        .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .role { border-radius: var(--radius); padding: 34px 30px; border: 1px solid var(--rule); background: var(--paper-raised); }
+        .role.dark { background: linear-gradient(160deg, #16302B, #0E211D); color: #fff; border: none; }
+        .role .rc { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; font-size: 1.4rem; margin-bottom: 18px; background: var(--brand-soft); color: var(--brand); }
+        .role.dark .rc { background: rgba(111,192,172,.18); color: #6FC0AC; }
+        .role h3 { font-size: 1.3rem; margin-bottom: 12px; }
+        .role ul { list-style: none; }
+        .role li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: .93rem; color: var(--muted); }
+        .role.dark li { color: #C7D5CF; }
+        .role li i { color: var(--brand); margin-top: 3px; }
+        .role.dark li i { color: #6FC0AC; }
+
+        /* CTA band */
+        .cta-band { background: radial-gradient(700px 300px at 50% 0%, #24544A 0%, transparent 60%), linear-gradient(160deg, #0E211D, #16302B); color: #fff; text-align: center; border-radius: 26px; padding: 66px 30px; }
+        .cta-band h2 { font-size: clamp(1.9rem, 3.4vw, 2.5rem); margin-bottom: 16px; }
+        .cta-band p { color: #C7D5CF; max-width: 520px; margin: 0 auto 30px; font-size: 1.08rem; }
+
         /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 80px 0 30px;
+        footer { background: var(--ink); color: #B9C7C1; padding: 46px 0; }
+        .foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
+        .foot .brand-logo { color: #fff; }
+        .foot small { color: #7E938B; font-size: .85rem; }
+
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 60px; padding: 66px 0 80px; }
+            .preview { max-width: 420px; }
+            .feat-grid, .roles-grid { grid-template-columns: 1fr 1fr; }
+            .steps { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
         }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-        
-        .footer-col h3 {
-            font-size: 1.3rem;
-            margin-bottom: 25px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-        
-        .footer-col h3::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background-color: var(--primary);
-            bottom: 0;
-            left: 0;
-        }
-        
-        .footer-col ul {
-            list-style: none;
-        }
-        
-        .footer-col ul li {
-            margin-bottom: 12px;
-        }
-        
-        .footer-col ul li a {
-            color: #b0b7c3;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .footer-col ul li a:hover {
-            color: white;
-            padding-left: 5px;
-        }
-        
-        .footer-col p {
-            color: #b0b7c3;
-            margin-bottom: 20px;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .social-links a:hover {
-            background-color: var(--primary);
-            transform: translateY(-5px);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #b0b7c3;
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
-            .hero-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .hero-text h1 {
-                font-size: 2.5rem;
-            }
-            
-            .steps {
-                flex-direction: column;
-                gap: 50px;
-            }
-            
-            .step:not(:last-child)::after {
-                width: 2px;
-                height: calc(100% - 60px);
-                top: 60px;
-                left: 50%;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            nav {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: white;
-                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-                padding: 20px;
-            }
-            
-            nav.active {
-                display: block;
-            }
-            
-            nav ul {
-                flex-direction: column;
-            }
-            
-            nav ul li {
-                margin: 0 0 15px 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .hero {
-                padding: 130px 0 80px;
-            }
-            
-            .hero-text h1 {
-                font-size: 2rem;
-            }
-            
-            .section-title h2 {
-                font-size: 2rem;
-            }
-            
-            .features, .how-it-works, .cta {
-                padding: 70px 0;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                text-align: center;
-            }
-            
-            .hero-text h1 {
-                font-size: 1.8rem;
-            }
+        @media (max-width: 560px) {
+            section { padding: 68px 0; }
+            .feat-grid, .roles-grid, .steps { grid-template-columns: 1fr; }
+            .hero-stats { gap: 22px; }
+            .pv-float { left: 0; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
+
+    <!-- NAV -->
     <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo">
-                    <i class="far fa-clock"></i>
-                    <span>CheckTime</span>
-                </a>
-                
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <nav id="mainNav">
-                    <ul>
-                        <li><a href="#accueil">Accueil</a></li>
-                        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-                        <li><a href="#fonctionnement">Comment ça marche</a></li>
-                        <li><a href="#tarifs">Tarifs</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </nav>
-            </div>
+        <div class="wrap nav">
+            <a href="/" class="brand-logo">
+                <img src="{{ asset('logo.png') }}" alt="CheckTime École">
+                <span>CheckTime <span style="color:var(--brand)">École</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Fonctionnalités</a>
+                <a href="#how">Comment ça marche</a>
+                <a href="#roles">Rôles</a>
+            </nav>
+            <a href="{{ route('login') }}" class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="accueil">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Gérez facilement vos pointages avec CheckTime</h1>
-                    <p>CheckTime révolutionne la gestion du temps de travail. Simple, intuitive et conforme à la législation française, notre application vous permet de gérer les pointages de vos équipes en toute sérénité.</p>
-                    <div class="hero-buttons">
-                        <a href="#contact" class="btn">Commencer gratuitement</a>
-                        <a href="#fonctionnalites" class="btn btn-secondary">En savoir plus</a>
-                    </div>
+    <!-- HERO -->
+    <section class="hero" style="padding:0">
+        <div class="wrap hero-grid">
+            <div>
+                <span class="eyebrow"><i class="bi bi-fingerprint"></i> Pointage biométrique · Milieu scolaire</span>
+                <h1>Du <span class="accent">pointage</span> des enseignants<br>à la <span class="accent">paie des vacations</span>.</h1>
+                <p class="lead">CheckTime École automatise la présence des enseignants vacataires : planning des vacations, calcul des heures validées, pénalités, et génération des fiches de paie — en un seul outil.</p>
+                <div class="hero-cta">
+                    <a href="{{ route('login') }}" class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i> Accéder à l'application</a>
+                    <a href="#features" class="btn btn-ghost">Découvrir les fonctionnalités</a>
                 </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Application CheckTime sur mobile et tablette">
+                <div class="hero-stats">
+                    <div class="s"><div class="n">3</div><div class="l">rôles dédiés</div></div>
+                    <div class="s"><div class="n">100%</div><div class="l">multi-écoles</div></div>
+                    <div class="s"><div class="n">Auto</div><div class="l">rapports &amp; envois</div></div>
+                </div>
+            </div>
+            <div class="preview">
+                <div class="pv-card">
+                    <div class="pv-head">
+                        <span class="t">Fiche de vacation — Juillet</span>
+                        <span class="pv-badge">Validée</span>
+                    </div>
+                    <div class="pv-row"><span class="lbl"><i class="bi bi-clock-history"></i> Heures validées</span><span class="val">38 h 30</span></div>
+                    <div class="pv-row"><span class="lbl"><i class="bi bi-cash-coin"></i> Taux horaire (classe)</span><span class="val">3 500 F</span></div>
+                    <div class="pv-row"><span class="lbl"><i class="bi bi-exclamation-triangle"></i> Pénalité retard</span><span class="val" style="color:var(--critical)">− 6 700 F</span></div>
+                    <div class="pv-total"><span class="lbl" style="font-weight:600;color:var(--text)">Montant à payer</span><span class="val">127 050 F</span></div>
+                </div>
+                <div class="pv-float">
+                    <div class="ic"><i class="bi bi-fingerprint"></i></div>
+                    <div><div class="n">1er pointage</div><div class="l">07:58 · à l'heure</div></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features -->
-    <section class="features" id="fonctionnalites">
-        <div class="container">
-            <div class="section-title">
-                <h2>Fonctionnalités principales</h2>
-                <p>Découvrez les outils puissants qui simplifieront votre gestion du temps</p>
+    <!-- FEATURES -->
+    <section id="features">
+        <div class="wrap">
+            <div class="sec-head reveal">
+                <span class="eyebrow"><i class="bi bi-grid"></i> Module École</span>
+                <h2>Tout le cycle de la vacation, couvert</h2>
+                <p>De la pointeuse biométrique jusqu'à la fiche de paie, chaque étape est pensée pour le milieu scolaire.</p>
             </div>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-fingerprint"></i>
-                    </div>
+            <div class="feat-grid">
+                <div class="feat reveal">
+                    <div class="ic"><i class="bi bi-fingerprint"></i></div>
                     <h3>Pointage biométrique</h3>
-                    <p>Enregistrement sécurisé des pointages par reconnaissance digitale ou faciale, conforme au RGPD.</p>
+                    <p>Synchronisation des pointeuses : arrivées et départs des enseignants récupérés automatiquement depuis l'API biométrique.</p>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Rapports détaillés</h3>
-                    <p>Générez automatiquement des rapports d'heures, d'absences et de congés pour une gestion optimale.</p>
+                <div class="feat reveal">
+                    <div class="ic"><i class="bi bi-calendar-week"></i></div>
+                    <h3>Planning des vacations</h3>
+                    <p>Affectez les enseignants aux classes et matières, avec horaires fixes ou rotatifs et gestion des jours de vacation.</p>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Application mobile</h3>
-                    <p>Gérez les pointages depuis n'importe où avec notre application iOS et Android.</p>
+                <div class="feat gold reveal">
+                    <div class="ic"><i class="bi bi-calculator"></i></div>
+                    <h3>Moteur de calcul</h3>
+                    <p>Heures validées (retard et départ anticipé déduits), montant par taux horaire de classe, pénalités retard et absence.</p>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Conformité légale</h3>
-                    <p>Respecte toutes les obligations légales françaises en matière de suivi du temps de travail.</p>
+                <div class="feat reveal">
+                    <div class="ic"><i class="bi bi-mortarboard"></i></div>
+                    <h3>Classes &amp; taux horaires</h3>
+                    <p>Définissez vos niveaux, classes et taux de rémunération. Chaque vacation est valorisée selon la classe enseignée.</p>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-cloud"></i>
-                    </div>
-                    <h3>Sauvegarde cloud</h3>
-                    <p>Toutes vos données sont sauvegardées automatiquement et sécurisées dans le cloud.</p>
+                <div class="feat reveal">
+                    <div class="ic"><i class="bi bi-file-earmark-pdf"></i></div>
+                    <h3>Rapports PDF</h3>
+                    <p>Fiche présence &amp; ponctualité, fiche des heures de vacation (paie) et point d'assiduité consolidé pour la direction.</p>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-sync"></i>
-                    </div>
-                    <h3>Intégrations</h3>
-                    <p>Connectez CheckTime à vos outils de paie et de gestion des ressources humaines.</p>
+                <div class="feat gold reveal">
+                    <div class="ic"><i class="bi bi-envelope-paper"></i></div>
+                    <h3>Envois automatiques</h3>
+                    <p>Rapports planifiés et envoyés par email — aux enseignants chaque semaine, à la direction chaque début de mois.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How it works -->
-    <section class="how-it-works" id="fonctionnement">
-        <div class="container">
-            <div class="section-title">
-                <h2>Comment ça marche</h2>
-                <p>Mettez en place CheckTime en seulement 3 étapes simples</p>
+    <!-- HOW -->
+    <section id="how" class="how">
+        <div class="wrap">
+            <div class="sec-head reveal">
+                <span class="eyebrow"><i class="bi bi-signpost-2"></i> Comment ça marche</span>
+                <h2>Opérationnel en 4 étapes</h2>
+                <p>Un flux simple, du provisionnement de l'école jusqu'au calcul de la paie.</p>
             </div>
-            
             <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Inscription gratuite</h3>
-                    <p>Créez votre compte entreprise et paramétrez votre organisation en quelques minutes.</p>
+                <div class="step reveal"><div class="num">1</div><h3>Provisionner l'école</h3><p>Le super-admin crée l'établissement et synchronise sa biométrie (enseignants, appareils, zones).</p></div>
+                <div class="step reveal"><div class="num">2</div><h3>Planifier</h3><p>L'école définit ses classes, taux horaires, règles de pénalités et le planning des vacations.</p></div>
+                <div class="step reveal"><div class="num">3</div><h3>Pointer</h3><p>Les enseignants pointent à la pointeuse. Arrivées et départs alimentent automatiquement le système.</p></div>
+                <div class="step reveal"><div class="num">4</div><h3>Rapports &amp; paie</h3><p>Heures, montants et pénalités sont calculés. Les fiches sont générées et envoyées automatiquement.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROLES -->
+    <section id="roles">
+        <div class="wrap">
+            <div class="sec-head reveal">
+                <span class="eyebrow"><i class="bi bi-people"></i> Trois rôles</span>
+                <h2>Chacun son espace</h2>
+                <p>Une plateforme unique, des expériences dédiées selon le profil.</p>
+            </div>
+            <div class="roles-grid">
+                <div class="role dark reveal">
+                    <div class="rc"><i class="bi bi-shield-lock"></i></div>
+                    <h3>Super-admin</h3>
+                    <ul>
+                        <li><i class="bi bi-check-lg"></i> Création &amp; gestion des écoles</li>
+                        <li><i class="bi bi-check-lg"></i> Synchronisation biométrique</li>
+                        <li><i class="bi bi-check-lg"></i> Supervision globale (enseignants, appareils, zones)</li>
+                    </ul>
                 </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Ajoutez vos employés</h3>
-                    <p>Importez vos collaborateurs et personnalisez leurs plannings et horaires de travail.</p>
+                <div class="role reveal">
+                    <div class="rc"><i class="bi bi-building"></i></div>
+                    <h3>École / Direction</h3>
+                    <ul>
+                        <li><i class="bi bi-check-lg"></i> Planning des vacations &amp; classes</li>
+                        <li><i class="bi bi-check-lg"></i> Autorisations, missions, congés</li>
+                        <li><i class="bi bi-check-lg"></i> Rapports d'assiduité &amp; de paie</li>
+                    </ul>
                 </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Lancez les pointages</h3>
-                    <p>Installez les terminaux ou utilisez l'application mobile pour commencer à pointer.</p>
+                <div class="role reveal">
+                    <div class="rc"><i class="bi bi-mortarboard"></i></div>
+                    <h3>Enseignant</h3>
+                    <ul>
+                        <li><i class="bi bi-check-lg"></i> Mon planning de vacations</li>
+                        <li><i class="bi bi-check-lg"></i> Mes classes</li>
+                        <li><i class="bi bi-check-lg"></i> Mes fiches de présence &amp; paie</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA -->
-    <section class="cta" id="tarifs">
-        <div class="container">
-            <h2>Prêt à simplifier votre gestion du temps ?</h2>
-            <p>Rejoignez plus de 500 entreprises qui font confiance à CheckTime pour gérer leurs pointages en toute conformité.</p>
-            <a href="#contact" class="btn">Essayer gratuitement 30 jours</a>
+    <section style="padding-top:0">
+        <div class="wrap">
+            <div class="cta-band reveal">
+                <h2>Prêt à digitaliser vos vacations ?</h2>
+                <p>Connectez-vous à votre espace CheckTime École et gérez le pointage, les plannings et la paie en toute simplicité.</p>
+                <a href="{{ route('login') }}" class="btn btn-primary" style="font-size:1.02rem;padding:15px 30px"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
+            </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-col">
-                    <h3>CheckTime</h3>
-                    <p>L'application de gestion de pointage la plus simple et efficace pour les entreprises françaises.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                
-                <div class="footer-col">
-                    <h3>Liens rapides</h3>
-                    <ul>
-                        <li><a href="#accueil">Accueil</a></li>
-                        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-                        <li><a href="#fonctionnement">Comment ça marche</a></li>
-                        <li><a href="#tarifs">Tarifs</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-col">
-                    <h3>Légal</h3>
-                    <ul>
-                        <li><a href="#">Mentions légales</a></li>
-                        <li><a href="#">Politique de confidentialité</a></li>
-                        <li><a href="#">Conditions générales</a></li>
-                        <li><a href="#">RGPD</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-col">
-                    <h3>Contact</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Avenue de Paris, 75000 Paris</li>
-                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                        <li><i class="fas fa-envelope"></i> contact@checktime.fr</li>
-                    </ul>
-                </div>
+    <!-- FOOTER -->
+    <footer>
+        <div class="wrap foot">
+            <div class="brand-logo">
+                <img src="{{ asset('logo.png') }}" alt="CheckTime École" style="height:38px">
+                <span>CheckTime École</span>
             </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 CheckTime. Tous droits réservés.</p>
-            </div>
+            <small>© {{ date('Y') }} CheckTime École — Pointage biométrique &amp; paie des vacations scolaires.</small>
         </div>
     </footer>
 
     <script>
-        // Menu mobile
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mainNav = document.getElementById('mainNav');
-        
-        mobileMenuBtn.addEventListener('click', function() {
-            mainNav.classList.toggle('active');
-            
-            // Changer l'icône
-            const icon = mobileMenuBtn.querySelector('i');
-            if (mainNav.classList.contains('active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-        
-        // Fermer le menu au clic sur un lien
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                if (mainNav.classList.contains('active')) {
-                    mainNav.classList.remove('active');
-                    const icon = mobileMenuBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-        });
-        
-        // Animation au scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
-                }
-            });
-        }, observerOptions);
-        
-        // Observer les éléments à animer
-        const elementsToAnimate = document.querySelectorAll('.feature-card, .step');
-        elementsToAnimate.forEach(el => observer.observe(el));
+        // Révélation au défilement
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     </script>
 </body>
 </html>
