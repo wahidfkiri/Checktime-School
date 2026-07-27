@@ -63,9 +63,10 @@
             background: rgba(246,243,234,.82); backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--rule);
         }
-        .nav { display: flex; align-items: center; justify-content: space-between; height: 74px; }
+        .nav { display: flex; align-items: center; justify-content: space-between; height: 92px; }
         .brand-logo { display: flex; align-items: center; gap: 12px; font-family: 'Sora'; font-weight: 700; font-size: 1.15rem; color: var(--ink); }
         .brand-logo img { height: 42px; width: auto; }
+        .brand-logo img.logo-lg { height: 70px; }
         .nav-links { display: flex; align-items: center; gap: 34px; }
         .nav-links a { font-weight: 500; font-size: .95rem; color: var(--muted); transition: color .2s; }
         .nav-links a:hover { color: var(--brand); }
@@ -114,6 +115,15 @@
         .pv-float .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--gold-soft); color: var(--gold); display: grid; place-items: center; font-size: 1.2rem; }
         .pv-float .n { font-family: 'Sora'; font-weight: 700; font-size: 1.05rem; line-height: 1; }
         .pv-float .l { font-size: .74rem; color: var(--muted); }
+        .pv-slot { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+        .pv-slot:last-child { border-bottom: none; }
+        .pv-slot .time { font-family: 'Sora'; font-weight: 700; font-size: .74rem; line-height: 1.15; text-align: center; color: var(--brand); background: var(--brand-soft); padding: 7px 10px; border-radius: 9px; white-space: nowrap; }
+        .pv-slot .meta { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+        .pv-slot .meta .who { font-weight: 600; font-size: .92rem; }
+        .pv-slot .meta .cls { font-size: .78rem; color: var(--muted); }
+        .pv-slot .st { font-size: 1.05rem; }
+        .pv-slot .st.ok { color: var(--brand); }
+        .pv-slot .st.late { color: var(--gold); }
 
         /* ===== SECTIONS ===== */
         section { padding: 92px 0; }
@@ -189,13 +199,11 @@
     <header>
         <div class="wrap nav">
             <a href="/" class="brand-logo">
-                <img src="{{ asset('logo.png') }}" alt="CheckTime École">
-                <span>CheckTime <span style="color:var(--brand)">École</span></span>
+                <img src="{{ asset('logo.png') }}" alt="CheckTime École" class="logo-lg">
             </a>
             <nav class="nav-links">
                 <a href="#features">Fonctionnalités</a>
                 <a href="#how">Comment ça marche</a>
-                <a href="#roles">Rôles</a>
             </nav>
             <a href="{{ route('login') }}" class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
         </div>
@@ -221,17 +229,28 @@
             <div class="preview">
                 <div class="pv-card">
                     <div class="pv-head">
-                        <span class="t">Fiche de vacation — Juillet</span>
-                        <span class="pv-badge">Validée</span>
+                        <span class="t"><i class="bi bi-calendar-week" style="color:var(--brand)"></i> Planning des vacations</span>
+                        <span class="pv-badge">Cette semaine</span>
                     </div>
-                    <div class="pv-row"><span class="lbl"><i class="bi bi-clock-history"></i> Heures validées</span><span class="val">38 h 30</span></div>
-                    <div class="pv-row"><span class="lbl"><i class="bi bi-cash-coin"></i> Taux horaire (classe)</span><span class="val">3 500 F</span></div>
-                    <div class="pv-row"><span class="lbl"><i class="bi bi-exclamation-triangle"></i> Pénalité retard</span><span class="val" style="color:var(--critical)">− 6 700 F</span></div>
-                    <div class="pv-total"><span class="lbl" style="font-weight:600;color:var(--text)">Montant à payer</span><span class="val">127 050 F</span></div>
+                    <div class="pv-slot">
+                        <span class="time">08:00<br>10:00</span>
+                        <span class="meta"><span class="who">M. Kossou</span><span class="cls">6ᵉ A · Mathématiques</span></span>
+                        <i class="bi bi-check-circle-fill st ok"></i>
+                    </div>
+                    <div class="pv-slot">
+                        <span class="time">10:00<br>12:00</span>
+                        <span class="meta"><span class="who">Mme Adjovi</span><span class="cls">Tle D · Physique</span></span>
+                        <i class="bi bi-clock-fill st late"></i>
+                    </div>
+                    <div class="pv-slot">
+                        <span class="time">14:00<br>16:00</span>
+                        <span class="meta"><span class="who">M. Dossou</span><span class="cls">3ᵉ B · SVT</span></span>
+                        <i class="bi bi-check-circle-fill st ok"></i>
+                    </div>
                 </div>
                 <div class="pv-float">
-                    <div class="ic"><i class="bi bi-fingerprint"></i></div>
-                    <div><div class="n">1er pointage</div><div class="l">07:58 · à l'heure</div></div>
+                    <div class="ic"><i class="bi bi-file-earmark-pdf"></i></div>
+                    <div><div class="n">Rapport d'assiduité</div><div class="l">PDF généré · envoyé</div></div>
                 </div>
             </div>
         </div>
@@ -293,46 +312,6 @@
                 <div class="step reveal"><div class="num">2</div><h3>Planifier</h3><p>L'école définit ses classes, taux horaires, règles de pénalités et le planning des vacations.</p></div>
                 <div class="step reveal"><div class="num">3</div><h3>Pointer</h3><p>Les enseignants pointent à la pointeuse. Arrivées et départs alimentent automatiquement le système.</p></div>
                 <div class="step reveal"><div class="num">4</div><h3>Rapports &amp; paie</h3><p>Heures, montants et pénalités sont calculés. Les fiches sont générées et envoyées automatiquement.</p></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ROLES -->
-    <section id="roles">
-        <div class="wrap">
-            <div class="sec-head reveal">
-                <span class="eyebrow"><i class="bi bi-people"></i> Trois rôles</span>
-                <h2>Chacun son espace</h2>
-                <p>Une plateforme unique, des expériences dédiées selon le profil.</p>
-            </div>
-            <div class="roles-grid">
-                <div class="role dark reveal">
-                    <div class="rc"><i class="bi bi-shield-lock"></i></div>
-                    <h3>Super-admin</h3>
-                    <ul>
-                        <li><i class="bi bi-check-lg"></i> Création &amp; gestion des écoles</li>
-                        <li><i class="bi bi-check-lg"></i> Synchronisation biométrique</li>
-                        <li><i class="bi bi-check-lg"></i> Supervision globale (enseignants, appareils, zones)</li>
-                    </ul>
-                </div>
-                <div class="role reveal">
-                    <div class="rc"><i class="bi bi-building"></i></div>
-                    <h3>École / Direction</h3>
-                    <ul>
-                        <li><i class="bi bi-check-lg"></i> Planning des vacations &amp; classes</li>
-                        <li><i class="bi bi-check-lg"></i> Autorisations, missions, congés</li>
-                        <li><i class="bi bi-check-lg"></i> Rapports d'assiduité &amp; de paie</li>
-                    </ul>
-                </div>
-                <div class="role reveal">
-                    <div class="rc"><i class="bi bi-mortarboard"></i></div>
-                    <h3>Enseignant</h3>
-                    <ul>
-                        <li><i class="bi bi-check-lg"></i> Mon planning de vacations</li>
-                        <li><i class="bi bi-check-lg"></i> Mes classes</li>
-                        <li><i class="bi bi-check-lg"></i> Mes fiches de présence &amp; paie</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </section>
