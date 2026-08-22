@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Models\Employee;
 use App\Models\Client;
 use App\Models\Device; 
@@ -28,7 +30,7 @@ class DailyAttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -191,7 +193,7 @@ class DailyAttendanceController extends Controller
     public function getData(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);
@@ -765,7 +767,7 @@ private function getAllTransactionsWithRetry($devices, $startTime, $endTime, $to
     public function syncStatus(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -800,7 +802,7 @@ private function getAllTransactionsWithRetry($devices, $startTime, $endTime, $to
      */
     public function getEmployeeByCode(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client || !$request->has('emp_code')) {
             return response()->json(null);
@@ -837,7 +839,7 @@ private function getAllTransactionsWithRetry($devices, $startTime, $endTime, $to
     public function exportPDF(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([

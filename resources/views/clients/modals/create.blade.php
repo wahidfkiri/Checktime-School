@@ -2,7 +2,7 @@
     <h5 class="modal-title">Nouvelle école</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form id="create-client-form" action="{{ route('clients.store') }}" method="POST">
+<form id="create-client-form" action="{{ route('admin.clients.store') }}" method="POST">
     @csrf
     <div class="modal-body">
         <div class="row">

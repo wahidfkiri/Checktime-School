@@ -2,6 +2,7 @@
 
 namespace Vendor\School\Controllers;
 
+use App\Support\CurrentClient;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\PenaltyRule;
@@ -11,7 +12,7 @@ class PenaltyRuleController extends Controller
 {
     public function index(Request $request)
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $penaltyRule = PenaltyRule::forClientOrDefaults($client->id ?? 0);
 
@@ -21,7 +22,7 @@ class PenaltyRuleController extends Controller
     public function update(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             if (!$client) {
                 return response()->json(['success' => false, 'message' => 'Client non trouvé.'], 404);

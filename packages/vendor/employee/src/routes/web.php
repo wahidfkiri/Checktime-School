@@ -8,7 +8,7 @@ use Vendor\Employee\Controllers\EmployeeController;
 
 
 Auth::routes();
-Route::middleware(['web','auth', 'role:client','client.active'])->group(function () {
+Route::middleware(['web','auth', 'role:super-admin|client','client.active'])->group(function () {
 
       Route::prefix('areas')->name('areas.')->group(function () {
         

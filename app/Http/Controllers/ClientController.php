@@ -8,6 +8,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Services\CheckTimeService;
 use App\Models\User;
 use App\Models\Setting;
+use App\Support\CurrentClient;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
@@ -63,14 +64,14 @@ class ClientController extends Controller
                 
                 $html = '<div class="btn-group" role="group" style="gap: 3px;">';
 
-                // Bouton Synchroniser (biométrie)
-                $html .= '<button type="button"
-                            class="btn btn-sm btn-primary sync-client-btn"
-                            data-id="' . $client->id . '"
-                            data-name="' . $clientName . '"
-                            title="Synchroniser la biométrie">
-                            <i class="bi bi-arrow-repeat"></i>
-                         </button>';
+                // Bouton Entrer (impersonation : travailler dans cette école)
+                if ($client->is_active) {
+                    $html .= '<a href="' . route('admin.clients.select', $client->id) . '"
+                                class="btn btn-sm btn-success"
+                                title="Entrer dans cette école">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                             </a>';
+                }
 
                 // Bouton Éditer
                 $html .= '<button type="button"
@@ -391,5 +392,31 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         return view('clients.show', compact('client'));
+    }
+
+    /**
+     * Entre dans le contexte d'une école (impersonation super-admin).
+     * À partir de là, tous les écrans client fonctionnent via CurrentClient.
+     */
+    public function select(Client $client)
+    {
+        if (!$client->is_active) {
+            return redirect()->route('admin.clients.index')
+                ->with('error', "Cette école est désactivée : activez-la avant d'y entrer.");
+        }
+
+        CurrentClient::select($client->id);
+
+        return redirect()->route('dashboard')
+            ->with('success', "Vous travaillez désormais dans « {$client->raison_sociale} ».");
+    }
+
+    /** Quitte le contexte école et revient à la liste. */
+    public function release()
+    {
+        CurrentClient::clear();
+
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Vous avez quitté le contexte école.');
     }
 }

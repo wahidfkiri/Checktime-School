@@ -44,7 +44,7 @@ public function login(Request $request)
 
             return response()->json([
                 'success' => true,
-                'redirect' => route('super-admin.dashboard'),
+                'redirect' => route('admin.clients.index'),
                 'message' => 'Connexion réussie!'
             ]);
         }

@@ -28,7 +28,6 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SignataireController;
 use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\MissionController;
-use App\Http\Controllers\SuperAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,39 +72,29 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Espace super-admin — provisionnement/gestion des écoles (clients)
-Route::middleware(['auth','web','role:super-admin'])->group(function () {
-    Route::get('/super-admin/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
-
-    // Synchronisation biométrique déclenchée par le super-admin
-    Route::post('/super-admin/schools/sync-all', [SuperAdminController::class, 'syncAll'])->name('super-admin.schools.sync-all');
-    Route::post('/super-admin/schools/{client}/sync', [SuperAdminController::class, 'syncSchool'])->name('super-admin.schools.sync');
-
-    // Gestion des écoles (clients) — CRUD complet
-    Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
-    Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
-    Route::get('/clients/create', [ClientController::class, 'create'])->name('clients.create');
-    Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
-    Route::get('/clients/check-rccm', [ClientController::class, 'checkRccm'])->name('clients.check-rccm');
-    Route::get('/clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
-    Route::put('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
-    Route::delete('/clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
-    Route::post('/clients/{client}/toggle-status', [ClientController::class, 'toggleStatus'])->name('clients.toggle-status');
-
-    // Supervision globale (lecture seule, toutes écoles)
-    Route::prefix('super-admin/supervision')->name('super-admin.supervision.')->group(function () {
-        Route::get('/teachers', [SuperAdminController::class, 'teachers'])->name('teachers');
-        Route::get('/teachers/data', [SuperAdminController::class, 'teachersData'])->name('teachers.data');
-        Route::get('/devices', [SuperAdminController::class, 'devices'])->name('devices');
-        Route::get('/devices/data', [SuperAdminController::class, 'devicesData'])->name('devices.data');
-        Route::get('/zones', [SuperAdminController::class, 'zones'])->name('zones');
-        Route::get('/zones/data', [SuperAdminController::class, 'zonesData'])->name('zones.data');
-        Route::get('/departments', [SuperAdminController::class, 'departments'])->name('departments');
-        Route::get('/departments/data', [SuperAdminController::class, 'departmentsData'])->name('departments.data');
+/*
+ * Espace super-admin : gestion des écoles + choix du contexte de travail.
+ * Le super-admin « entre » dans une école (impersonation) puis navigue dans
+ * les écrans du client via CurrentClient ; il « quitte » pour revenir ici.
+ */
+Route::middleware(['auth','web','role:super-admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
+        Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
+        Route::get('/clients/create', [ClientController::class, 'create'])->name('clients.create');
+        Route::get('/clients/check-rccm', [ClientController::class, 'checkRccm'])->name('clients.check-rccm');
+        Route::get('/clients/quitter', [ClientController::class, 'release'])->name('clients.release');
+        Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
+        Route::get('/clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
+        Route::get('/clients/{client}/entrer', [ClientController::class, 'select'])->name('clients.select');
+        Route::put('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
+        Route::delete('/clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
+        Route::post('/clients/{client}/toggle-status', [ClientController::class, 'toggleStatus'])->name('clients.toggle-status');
     });
-});
 
-Route::middleware(['auth','web', 'role:client','client.active'])->group(function () {
+Route::middleware(['auth','web', 'role:super-admin|client','client.active'])->group(function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard/stats', [DashboardController::class, 'getStatsJson'])->name('client.stats');
     Route::get('/client/{client}/details', [DashboardController::class, 'getClientDetails'])->name('client.details');

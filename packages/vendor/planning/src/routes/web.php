@@ -8,7 +8,7 @@ use Vendor\Planning\Controllers\ScheduleAssignmentController;
 
 
 Auth::routes();
-Route::middleware(['web','auth', 'role:client','client.active'])->group(function () {
+Route::middleware(['web','auth', 'role:super-admin|client','client.active'])->group(function () {
 
      // Gestion des Plannings
     Route::prefix('work-hours')->name('work-hours.')->group(function () {

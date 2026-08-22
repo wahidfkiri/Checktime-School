@@ -2,6 +2,7 @@
 
 namespace Vendor\School\Controllers;
 
+use App\Support\CurrentClient;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Employee;
@@ -14,7 +15,7 @@ class VacationReportController extends Controller
 {
     public function index(Request $request)
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $employees = Employee::where('client_id', $client->id ?? 0)
             ->orderBy('first_name')
@@ -63,7 +64,7 @@ class VacationReportController extends Controller
 
     public function attendanceSummaryPdf(Request $request)
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $validated = $request->validate([
             'month' => 'required|date_format:Y-m',
@@ -91,7 +92,7 @@ class VacationReportController extends Controller
 
     private function resolveReportInputs(Request $request): array
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $validated = $request->validate([
             'month' => 'required|date_format:Y-m',

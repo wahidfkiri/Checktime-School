@@ -1,6 +1,7 @@
 <?php
 
 namespace Vendor\Employee\Controllers;
+use App\Support\CurrentClient;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class DepartmentController extends Controller
     public function index(Request $request)
     {
         // Récupérer le client de l'utilisateur connecté
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
         
         // Si l'utilisateur n'a pas de client associé
         if (!$client) {
@@ -59,7 +60,7 @@ class DepartmentController extends Controller
 
 
         // Récupérer la configuration d'accès du client
-           $client = Client::where('user_id', auth()->id())->first();
+           $client = CurrentClient::get();
             $accessConfig = DB::table('access_configs')->where('client_id', $client->id)->first();
         // Récupérer le token d'authentification (à adapter selon votre configuration)
         $token = $accessConfig ? $accessConfig->general_token : null;
@@ -148,7 +149,7 @@ public function update(Request $request, $id)
         ]);
 
         // Récupérer la configuration d'accès du client
-           $client = Client::where('user_id', auth()->id())->first();
+           $client = CurrentClient::get();
             $accessConfig = DB::table('access_configs')->where('client_id', $client->id)->first();
         // Récupérer le token d'authentification (à adapter selon votre configuration)
         $token = $accessConfig ? $accessConfig->general_token : null;
@@ -216,7 +217,7 @@ public function destroy($id)
     try {
 
         // Récupérer la configuration d'accès du client
-           $client = Client::where('user_id', auth()->id())->first();
+           $client = CurrentClient::get();
             $accessConfig = DB::table('access_configs')->where('client_id', $client->id)->first();
         // Récupérer le token d'authentification (à adapter selon votre configuration)
         $token = $accessConfig ? $accessConfig->general_token : null;
@@ -501,7 +502,7 @@ public function destroy($id)
     {
         if ($request->ajax()) {
             // Récupérer le client de l'utilisateur connecté
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return DataTables::of([])->make(true);
@@ -570,7 +571,7 @@ public function destroy($id)
     {
         try {
             // Récupérer le client de l'utilisateur connecté
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -612,7 +613,7 @@ public function destroy($id)
     public function syncStatus()
     {
         // Récupérer le client de l'utilisateur connecté
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return response()->json([
@@ -643,7 +644,7 @@ public function destroy($id)
     {
         try {
             // Récupérer le client de l'utilisateur connecté
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([

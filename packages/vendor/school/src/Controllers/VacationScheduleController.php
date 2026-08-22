@@ -2,6 +2,7 @@
 
 namespace Vendor\School\Controllers;
 
+use App\Support\CurrentClient;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Employee;
@@ -16,7 +17,7 @@ class VacationScheduleController extends Controller
 
     public function index(Request $request)
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $employees = Employee::where('client_id', $client->id ?? 0)
             ->orderBy('first_name')
@@ -29,7 +30,7 @@ class VacationScheduleController extends Controller
 
     public function getLocalSchedules(Request $request)
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $query = EmployeeSchedule::with(['employee', 'schoolClass'])
             ->where('client_id', $client->id ?? 0)
@@ -89,7 +90,7 @@ class VacationScheduleController extends Controller
     public function store(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             $validated = $request->validate([
                 'employee_id' => 'required|exists:employees,id',
@@ -158,7 +159,7 @@ class VacationScheduleController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             $schedule = EmployeeSchedule::where('client_id', $client->id ?? 0)
                 ->where('schedule_type', 'fixe')
@@ -230,7 +231,7 @@ class VacationScheduleController extends Controller
     public function destroy($id)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             $schedule = EmployeeSchedule::where('client_id', $client->id ?? 0)
                 ->where('schedule_type', 'fixe')

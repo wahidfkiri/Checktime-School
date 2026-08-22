@@ -27,24 +27,11 @@ function setTheme(theme, persist = false) {
  * Init theme from setTheme()
  */
 function initTheme() {
-  //If the user manually set a theme, we'll load that
+  // Mode CLAIR par défaut. On respecte le choix explicite de l'utilisateur
+  // (enregistré via le toggle), mais on ne suit plus la préférence système :
+  // sans préférence stockée, l'application démarre toujours en clair.
   const storedTheme = localStorage.getItem(THEME_KEY)
-  if (storedTheme) {
-    return setTheme(storedTheme)
-  }
-  //Detect if the user set his preferred color scheme to dark
-  if (!window.matchMedia) {
-    return
-  }
-
-  //Media query to detect dark preference
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-
-  //Register change listener
-  mediaQuery.addEventListener("change", (e) =>
-    setTheme(e.matches ? "dark" : "light", true)
-  )
-  return setTheme(mediaQuery.matches ? "dark" : "light", true)
+  return setTheme(storedTheme === "dark" ? "dark" : "light")
 }
 
 window.addEventListener('DOMContentLoaded', () => {

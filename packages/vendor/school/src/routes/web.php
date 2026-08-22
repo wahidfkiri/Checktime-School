@@ -7,7 +7,7 @@ use Vendor\School\Controllers\PenaltyRuleController;
 use Vendor\School\Controllers\VacationReportController;
 use Vendor\School\Controllers\EmployeePortalController;
 
-Route::middleware(['web', 'auth', 'role:client', 'client.active'])->group(function () {
+Route::middleware(['web', 'auth', 'role:super-admin|client', 'client.active'])->group(function () {
 
     Route::prefix('classes')->name('classes.')->group(function () {
         Route::get('/', [ClassController::class, 'index'])->name('index');

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Models\Employee;
 use App\Models\Client;
 use App\Models\SignatairePoste;
@@ -21,7 +23,7 @@ class CustomReportController extends Controller
      */
     public function presencePonctualite(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
 
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -60,7 +62,7 @@ class CustomReportController extends Controller
     public function generateCustomReport(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
 
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);
@@ -394,7 +396,7 @@ class CustomReportController extends Controller
     public function exportCustomPdfByDept(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
 
             if (!$client) {
                 return redirect()->back()->with('error', 'Client non trouvé.');
@@ -794,7 +796,7 @@ class CustomReportController extends Controller
     public function exportCustomPdf(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
 
             if (!$client) {
                 return redirect()->back()->with('error', 'Client non trouvé.');

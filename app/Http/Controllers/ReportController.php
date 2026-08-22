@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Models\Employee;
 use App\Models\Client;
 use App\Models\Device;
@@ -24,7 +26,7 @@ class ReportController extends Controller
      */
     public function absencesDelays(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -52,7 +54,7 @@ class ReportController extends Controller
     public function getData(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);
@@ -795,7 +797,7 @@ private function hasMorningPermission($employeeId, $date)
 public function debugGetData(Request $request)
 {
     try {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return response()->json(['error' => 'Client non trouvé'], 404);
@@ -836,7 +838,7 @@ public function debugGetData(Request $request)
     public function exportPdf(Request $request)
     {
         // try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return redirect()->back()->with('error', 'Client non trouvé.');
@@ -1016,7 +1018,7 @@ public function debugGetData(Request $request)
     public function previewPdf(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);

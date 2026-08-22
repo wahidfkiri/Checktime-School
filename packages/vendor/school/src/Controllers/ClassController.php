@@ -2,6 +2,7 @@
 
 namespace Vendor\School\Controllers;
 
+use App\Support\CurrentClient;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\SchoolClass;
@@ -17,7 +18,7 @@ class ClassController extends Controller
 
     public function getLocalClasses(Request $request)
     {
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
 
         $query = SchoolClass::where('client_id', $client->id ?? 0);
 
@@ -68,7 +69,7 @@ class ClassController extends Controller
     public function store(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             $validated = $request->validate([
                 'level' => 'required|string|max:100',
@@ -103,7 +104,7 @@ class ClassController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             $schoolClass = SchoolClass::where('client_id', $client->id ?? 0)->find($id);
 
@@ -146,7 +147,7 @@ class ClassController extends Controller
     public function destroy($id)
     {
         try {
-            $client = Client::where('user_id', auth()->id())->first();
+            $client = CurrentClient::get();
 
             $schoolClass = SchoolClass::where('client_id', $client->id ?? 0)->find($id);
 

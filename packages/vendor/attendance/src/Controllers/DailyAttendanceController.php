@@ -2,6 +2,8 @@
 
 namespace Vendor\Attendance\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\Client;
@@ -32,7 +34,7 @@ class DailyAttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -86,7 +88,7 @@ class DailyAttendanceController extends Controller
      */
     public function retardList(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -160,7 +162,7 @@ class DailyAttendanceController extends Controller
      */
     public function presenceList(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -219,7 +221,7 @@ class DailyAttendanceController extends Controller
      */
     public function absenceList(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return redirect()->route('home')->with('error', 'Client non trouvé.');
@@ -279,7 +281,7 @@ class DailyAttendanceController extends Controller
     public function getRetardData(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);
@@ -672,7 +674,7 @@ class DailyAttendanceController extends Controller
     private function getFilteredAttendanceData(Request $request, array $statuses)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);
@@ -926,7 +928,7 @@ class DailyAttendanceController extends Controller
     public function getData(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json(['error' => 'Client non trouvé'], 404);
@@ -1332,7 +1334,7 @@ class DailyAttendanceController extends Controller
             'OVERTIME' => 'Heures supplémentaires',
             'SHORT_WORK' => 'Présent',
             'LEAVE' => 'Congé',
-            'IRREGULAR' => 'Irregular',
+            'IRREGULAR' => 'Présent',
             'MULTIPLE_PUNCHES' => 'Pointages multiples'
         ];
         
@@ -1432,7 +1434,7 @@ class DailyAttendanceController extends Controller
     public function syncStatus(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -1474,7 +1476,7 @@ class DailyAttendanceController extends Controller
     public function resyncAttendance(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -1671,7 +1673,7 @@ class DailyAttendanceController extends Controller
     public function exportPDF(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return redirect()->back()->with('error', 'Client non trouvé.');
@@ -1789,7 +1791,7 @@ class DailyAttendanceController extends Controller
     public function exportPresencePdf(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -1939,7 +1941,7 @@ class DailyAttendanceController extends Controller
     public function exportRetardPdf(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -2075,7 +2077,7 @@ class DailyAttendanceController extends Controller
     public function exportAbsencePdf(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -2366,7 +2368,7 @@ class DailyAttendanceController extends Controller
      */
     public function getEmployeeByCode(Request $request)
     {
-        $client = Client::where('user_id', auth()->user()->id)->first();
+        $client = CurrentClient::get();
         
         if (!$client || !$request->has('emp_code')) {
             return response()->json(null);
@@ -2406,7 +2408,7 @@ class DailyAttendanceController extends Controller
     public function syncAttendance(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([

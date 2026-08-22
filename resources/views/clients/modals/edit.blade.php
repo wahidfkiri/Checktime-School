@@ -133,7 +133,7 @@ $(document).ready(function() {
         var clientId = $(this).data('client-id');
         if (rccm && rccm.length > 0) {
             $.ajax({
-                url: "{{ route('clients.check-rccm') }}",
+                url: "{{ route('admin.clients.check-rccm') }}",
                 method: 'GET',
                 data: { rccm: rccm, client_id: clientId || '' },
                 success: function(response) {

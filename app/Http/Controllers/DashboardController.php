@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentClient;
 use App\Models\Client;
 use App\Models\User;
 use App\Models\Employee;
@@ -24,7 +25,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Récupérer le client de l'utilisateur connecté
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
         
         // Si l'utilisateur n'a pas de client associé
         if (!$client) {
@@ -481,7 +482,7 @@ class DashboardController extends Controller
     public function getStatsJson()
     {
         // Récupérer le client de l'utilisateur connecté
-        $client = Client::where('user_id', auth()->id())->first();
+        $client = CurrentClient::get();
         
         if (!$client) {
             return response()->json([

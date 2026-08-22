@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Models\Client;
 use App\Models\Signataire;
 use App\Models\SignatairePoste;
@@ -16,7 +18,7 @@ class SignataireController extends Controller
 {
     private function currentClient(): ?Client
     {
-        return Client::where('user_id', auth()->user()->id)->first();
+        return CurrentClient::get();
     }
 
     /**

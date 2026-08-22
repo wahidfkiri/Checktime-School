@@ -599,7 +599,7 @@ class AttendanceSyncService
             $stats['notes'] .= "Un seul pointage. ";
         } elseif ($totalPunches % 2 != 0) {
             // Nombre impair de pointages
-            $stats['status'] = 'IRREGULAR';
+            $stats['status'] = 'Présent';
             $stats['notes'] .= "Nombre impair de pointages ({$totalPunches}). ";
         }
         

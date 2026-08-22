@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Models\Leave;
 use App\Models\Employee;
 use App\Models\LeaveType;
@@ -13,7 +15,7 @@ class LeaveController extends Controller
 {
     public function index()
     {
-        $clientId = Client::where('user_id', auth()->user()->id)->value('id');
+        $clientId = CurrentClient::id();
         $employees = Employee::where('client_id', $clientId)
             ->where('status', 'active')
             ->orderBy('first_name')
@@ -28,7 +30,7 @@ class LeaveController extends Controller
 
     public function datatable(Request $request)
     {
-        $clientId = Client::where('user_id', auth()->user()->id)->value('id');
+        $clientId = CurrentClient::id();
         $query = Leave::with(['employee', 'type'])
             ->where('client_id', $clientId);
         
@@ -84,7 +86,7 @@ class LeaveController extends Controller
         ]);
 
         try {
-           $clientId = Client::where('user_id', auth()->user()->id)->value('id');
+           $clientId = CurrentClient::id();
             $leave = Leave::create([
                 'client_id' => $clientId,
                 'employee_id' => $request->employee_id,
@@ -111,7 +113,7 @@ class LeaveController extends Controller
     public function edit($id)
     {
         try {
-           $clientId = Client::where('user_id', auth()->user()->id)->value('id');
+           $clientId = CurrentClient::id();
             $leave = Leave::where('client_id', $clientId)
                 ->findOrFail($id);
             
@@ -147,7 +149,7 @@ class LeaveController extends Controller
         ]);
 
         try {
-           $clientId = Client::where('user_id', auth()->user()->id)->value('id');
+           $clientId = CurrentClient::id();
             $leave = Leave::where('client_id', $clientId)
                 ->findOrFail($id);
             
@@ -205,7 +207,7 @@ class LeaveController extends Controller
     public function destroy($id)
     {
         try {
-           $clientId = Client::where('user_id', auth()->user()->id)->value('id');
+           $clientId = CurrentClient::id();
             $leave = Leave::where('client_id', $clientId)
                 ->findOrFail($id);
             

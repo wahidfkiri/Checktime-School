@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Support\CurrentClient;
 
 use App\Services\BiometricService;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class BiometricController extends Controller
     {
         try {
             $user = \Auth::user();
-            $client = $user->client; // Assurez-vous que l'utilisateur a une relation
+            $client = CurrentClient::get();
             $access_configs = \App\Models\AccessConfig::where('client_id', $client->id)->first();
             $generalToken = $access_configs->general_token ?? null;
             $response = $this->biometricService->getTransactions($request, $generalToken);
@@ -40,7 +41,7 @@ class BiometricController extends Controller
      */
     public function getBiometricVerification($id)
     {
-        $client = \App\Models\Client::where('user_id', auth()->id())->first();
+        $client = \App\Models\CurrentClient::get();
 
         if (!$client) {
             return response()->json([

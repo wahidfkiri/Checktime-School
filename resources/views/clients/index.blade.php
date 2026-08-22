@@ -17,7 +17,7 @@
                         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('super-admin.dashboard') }}">Dashboard</a>
+                                    <a href="{{ route('admin.clients.index') }}">Écoles</a>
                                 </li>
                                 <li class="breadcrumb-item active">Écoles</li>
                             </ol>
@@ -42,9 +42,6 @@
                                     Inactives {{ $inactifs }}
                                 </button>
                             </div>
-                            <button type="button" class="btn btn-outline-primary" id="sync-all-btn">
-                                <i class="bi bi-arrow-repeat me-1"></i> Tout synchroniser
-                            </button>
                             <button type="button" class="btn btn-primary" id="create-client-btn">
                                 <i class="bi bi-plus-circle me-1"></i> Nouvelle école
                             </button>
@@ -103,7 +100,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('clients.datatable') }}",
+                url: "{{ route('admin.clients.datatable') }}",
                 data: function(d) {
                     d.status = $('.filter-btn.active').data('status');
                 },
@@ -142,7 +139,7 @@
         // =================== CRÉATION ===================
         $('#create-client-btn').click(function() {
             $.ajax({
-                url: "{{ route('clients.create') }}",
+                url: "{{ route('admin.clients.create') }}",
                 method: 'GET',
                 beforeSend: function() {
                     $('#createClientModal .modal-content').html('<div class="modal-body text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Chargement...</p></div>');
@@ -201,7 +198,7 @@
             var btn = $(this);
             btn.prop('disabled', true);
             $.ajax({
-                url: "/clients/" + clientId + "/edit",
+                url: "/admin/clients/" + clientId + "/edit",
                 method: 'GET',
                 beforeSend: function() {
                     $('#editClientModal .modal-content').html('<div class="modal-body text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Chargement...</p></div>');
@@ -228,7 +225,7 @@
             submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Mise à jour...');
 
             $.ajax({
-                url: "/clients/" + clientId,
+                url: "/admin/clients/" + clientId,
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -268,8 +265,8 @@
                 html: `Êtes-vous sûr de vouloir supprimer <strong>"${clientName}"</strong> ?<br><br><span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Cette action est irréversible !</span>`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#B4483D',
-                cancelButtonColor: '#5B665F',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Oui, supprimer !',
                 cancelButtonText: 'Annuler',
                 reverseButtons: true,
@@ -277,7 +274,7 @@
                 preConfirm: () => {
                     return new Promise((resolve, reject) => {
                         $.ajax({
-                            url: `/clients/${clientId}`,
+                            url: `/admin/clients/${clientId}`,
                             type: 'DELETE',
                             data: { _token: "{{ csrf_token() }}" },
                             success: function(response) { resolve(response); },
@@ -307,8 +304,8 @@
                 text: action === 'activate' ? 'Voulez-vous vraiment activer cette école ?' : 'Voulez-vous vraiment désactiver cette école ?',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#2F6F62',
-                cancelButtonColor: '#B4483D',
+                confirmButtonColor: '#435ebe',
+                cancelButtonColor: '#dc3545',
                 confirmButtonText: 'Oui',
                 cancelButtonText: 'Annuler',
                 reverseButtons: true,
@@ -316,7 +313,7 @@
                 preConfirm: function() {
                     return new Promise(function(resolve, reject) {
                         $.ajax({
-                            url: "/clients/" + clientId + "/toggle-status",
+                            url: "/admin/clients/" + clientId + "/toggle-status",
                             method: 'POST',
                             data: { _token: "{{ csrf_token() }}", action: action },
                             success: function(response) { resolve(response); },
@@ -332,90 +329,13 @@
             }).catch((error) => { showSweetAlert('error', 'Erreur', error); });
         });
 
-        // =================== SYNCHRO BIOMÉTRIE (une école) ===================
-        $(document).on('click', '.sync-client-btn', function() {
-            var clientId = $(this).data('id');
-            var clientName = $(this).data('name');
-            Swal.fire({
-                title: 'Synchroniser « ' + clientName + ' » ?',
-                text: 'Récupère enseignants, zones, départements et appareils depuis l\'API biométrique.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#2F6F62',
-                cancelButtonColor: '#5B665F',
-                confirmButtonText: 'Synchroniser',
-                cancelButtonText: 'Annuler',
-                reverseButtons: true,
-                showLoaderOnConfirm: true,
-                allowOutsideClick: () => !Swal.isLoading(),
-                preConfirm: function() {
-                    return new Promise(function(resolve, reject) {
-                        $.ajax({
-                            url: "/super-admin/schools/" + clientId + "/sync",
-                            method: 'POST',
-                            data: { _token: "{{ csrf_token() }}" },
-                            success: function(r) { resolve(r); },
-                            error: function(xhr) { reject(xhr.responseJSON?.message || 'Erreur de synchronisation.'); }
-                        });
-                    });
-                }
-            }).then((result) => {
-                if (result.isConfirmed && result.value && result.value.success) {
-                    var c = result.value.counts || {};
-                    var fmt = function(v) { return v === null ? '<span class="text-danger">erreur</span>' : v; };
-                    table.ajax.reload(null, false);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Synchronisation terminée',
-                        html: 'Enseignants : <strong>' + fmt(c.employees) + '</strong><br>' +
-                              'Zones : <strong>' + fmt(c.zones) + '</strong><br>' +
-                              'Départements : <strong>' + fmt(c.departments) + '</strong><br>' +
-                              'Appareils : <strong>' + fmt(c.devices) + '</strong>'
-                    });
-                }
-            }).catch((error) => { showSweetAlert('error', 'Erreur', error); });
-        });
-
-        // =================== TOUT SYNCHRONISER ===================
-        $('#sync-all-btn').click(function() {
-            Swal.fire({
-                title: 'Tout synchroniser ?',
-                text: 'Lance la synchro biométrique de toutes les écoles actives. Cela peut prendre du temps.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#2F6F62',
-                cancelButtonColor: '#5B665F',
-                confirmButtonText: 'Lancer',
-                cancelButtonText: 'Annuler',
-                reverseButtons: true,
-                showLoaderOnConfirm: true,
-                allowOutsideClick: () => !Swal.isLoading(),
-                preConfirm: function() {
-                    return new Promise(function(resolve, reject) {
-                        $.ajax({
-                            url: "{{ route('super-admin.schools.sync-all') }}",
-                            method: 'POST',
-                            data: { _token: "{{ csrf_token() }}" },
-                            success: function(r) { resolve(r); },
-                            error: function(xhr) { reject(xhr.responseJSON?.message || 'Erreur de synchronisation globale.'); }
-                        });
-                    });
-                }
-            }).then((result) => {
-                if (result.isConfirmed && result.value && result.value.success) {
-                    table.ajax.reload(null, false);
-                    showSweetAlert('success', 'Terminé', result.value.message, 6000);
-                }
-            }).catch((error) => { showSweetAlert('error', 'Erreur', error); });
-        });
-
         // =================== VÉRIFICATION RCCM ===================
         $(document).on('blur', '#rccm', function() {
             var rccm = $(this).val();
             var clientId = $(this).data('client-id');
             if (rccm && rccm.length > 0) {
                 $.ajax({
-                    url: "{{ route('clients.check-rccm') }}",
+                    url: "{{ route('admin.clients.check-rccm') }}",
                     method: 'GET',
                     data: { rccm: rccm, client_id: clientId || '' },
                     success: function(response) {

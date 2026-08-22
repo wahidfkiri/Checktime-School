@@ -507,10 +507,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var ctColors = {
-        brand: '#2F6F62',
-        gold: '#A9782E',
+        brand: '#435ebe',
+        gold: '#198754',
         warning: '#C97A2B',
-        critical: '#B4483D'
+        critical: '#dc3545'
     };
 
     // Présence aujourd'hui

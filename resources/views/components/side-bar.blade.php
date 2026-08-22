@@ -3,7 +3,7 @@
     <div class="sidebar-header position-relative">
       <div class="d-flex justify-content-center align-items-center">
         <div class="logo">
-          <a href="{{ auth()->user()->hasRole('super-admin') ? route('super-admin.dashboard') : (auth()->user()->hasRole('employee') ? route('employee-portal.index') : route('dashboard')) }}">
+          <a href="{{ auth()->user()->hasRole('super-admin') ? route('admin.clients.index') : (auth()->user()->hasRole('employee') ? route('employee-portal.index') : route('dashboard')) }}">
             <img src="{{asset('logo.png')}}" alt="Logo" srcset="" style=" height: 100px;">
           </a>
         </div>
@@ -14,56 +14,27 @@
     </div>
     <div class="sidebar-menu">
       <ul class="menu">
+        {{-- Contexte de travail du super-admin (impersonation) --}}
+        @role('super-admin')
+          @php($contextClient = \App\Support\CurrentClient::get())
+          <li class="sidebar-item @if(request()->routeIs('admin.clients.*')) active @endif">
+            <a href="{{ route('admin.clients.index') }}" class="sidebar-link">
+              <i class="bi bi-building-gear"></i>
+              <span>
+                Administration
+                @if($contextClient)
+                  <br><small class="text-success">{{ $contextClient->raison_sociale }}</small>
+                @else
+                  <br><small class="text-warning">aucune école sélectionnée</small>
+                @endif
+              </span>
+            </a>
+          </li>
+        @endrole
+
         <li class="sidebar-title">Menu</li>
 
-        @if(auth()->user()->hasRole('super-admin'))
-        <!-- Menu super-admin : provisionnement / gestion des écoles -->
-        <li class="sidebar-item @if(request()->routeIs('super-admin.dashboard')) active @endif">
-          <a href="{{route('super-admin.dashboard')}}" class="sidebar-link">
-            <i class="bi bi-grid-fill"></i>
-            <span>Tableau de bord</span>
-          </a>
-        </li>
-        <li class="sidebar-item @if(request()->routeIs('clients.*')) active @endif">
-          <a href="{{route('clients.index')}}" class="sidebar-link">
-            <i class="bi bi-building"></i>
-            <span>Gestion des <br>écoles</span>
-          </a>
-        </li>
-        <li class="sidebar-item has-sub @if(request()->routeIs('super-admin.supervision.*')) active @endif">
-          <a href="#" class="sidebar-link">
-            <i class="bi bi-eye"></i>
-            <span>Supervision</span>
-          </a>
-          <ul class="submenu @if(request()->routeIs('super-admin.supervision.*')) active @endif">
-            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.teachers')) active @endif">
-              <a href="{{route('super-admin.supervision.teachers')}}">
-                <i class="bi bi-mortarboard"></i>
-                <span>Enseignants</span>
-              </a>
-            </li>
-            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.devices')) active @endif">
-              <a href="{{route('super-admin.supervision.devices')}}">
-                <i class="bi bi-hdd"></i>
-                <span>Appareils</span>
-              </a>
-            </li>
-            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.zones')) active @endif">
-              <a href="{{route('super-admin.supervision.zones')}}">
-                <i class="bi bi-geo-alt"></i>
-                <span>Zones</span>
-              </a>
-            </li>
-            <li class="submenu-item @if(request()->routeIs('super-admin.supervision.departments')) active @endif">
-              <a href="{{route('super-admin.supervision.departments')}}">
-                <i class="bi bi-diagram-3"></i>
-                <span>Départements</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-
-        @elseif(auth()->user()->hasRole('employee'))
+        @if(auth()->user()->hasRole('employee'))
         <!-- Menu enseignant : module school limité à ses propres données -->
         <li class="sidebar-item @if(request()->routeIs('employee-portal.index')) active @endif">
           <a href="{{route('employee-portal.index')}}" class="sidebar-link">

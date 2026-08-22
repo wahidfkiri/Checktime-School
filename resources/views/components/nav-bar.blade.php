@@ -9,6 +9,16 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                @if(\App\Support\CurrentClient::isImpersonating())
+                  @php($ctxClient = \App\Support\CurrentClient::get())
+                  <div class="d-flex align-items-center me-3 px-3 py-1" style="background:#fff3cd;border:1px solid #ffe69c;border-radius:100px;">
+                    <i class="bi bi-eye-fill me-2" style="color:#997404;"></i>
+                    <span class="text-sm" style="color:#664d03;">École&nbsp;: <strong>{{ $ctxClient?->raison_sociale }}</strong></span>
+                    <a href="{{ route('admin.clients.release') }}" class="btn btn-sm btn-outline-secondary ms-3 py-0">
+                      <i class="bi bi-box-arrow-left"></i> Quitter
+                    </a>
+                  </div>
+                @endif
                 <label class="theme-switch me-3">
                   <input type="checkbox" id="toggle-dark">
                   <span>Mode sombre</span>
@@ -70,7 +80,7 @@
                       </div>
                       <div class="user-img d-flex align-items-center">
                         <div class="avatar avatar-md">
-                          <span style="width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; background-color:#2F6F62; color:#fff; font-weight:bold; font-family:'Lora',Georgia,serif;">
+                          <span style="width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; background-color:#435ebe; color:#fff; font-weight:bold;">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                           </span>
                         </div>

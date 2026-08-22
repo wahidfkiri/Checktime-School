@@ -2,6 +2,8 @@
 
 namespace Vendor\Planning\Controllers;
 
+use App\Support\CurrentClient;
+
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeSchedule;
 use App\Models\Employee;
@@ -21,7 +23,7 @@ class EmployeeScheduleController extends Controller
    public function index(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -265,7 +267,7 @@ class EmployeeScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             $validator = Validator::make($request->all(), [
                 'employee_ids' => 'required',
@@ -647,7 +649,7 @@ class EmployeeScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             $validator = Validator::make($request->all(), [
                 'employee_id' => 'required|exists:employees,id',
@@ -794,7 +796,7 @@ class EmployeeScheduleController extends Controller
     public function edit(EmployeeSchedule $employeeSchedule)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if ($employeeSchedule->client_id != $client->id) {
                 return response()->json([
@@ -822,7 +824,7 @@ class EmployeeScheduleController extends Controller
     public function update(Request $request, EmployeeSchedule $employeeSchedule)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if ($employeeSchedule->client_id != $client->id) {
                 return response()->json([
@@ -890,7 +892,7 @@ class EmployeeScheduleController extends Controller
     public function destroy(EmployeeSchedule $employeeSchedule)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if ($employeeSchedule->client_id != $client->id) {
                 return response()->json([
@@ -920,7 +922,7 @@ class EmployeeScheduleController extends Controller
     public function duplicate(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             $validated = $request->validate([
                 'schedule_id' => 'required|exists:employee_schedules,id',
@@ -1010,7 +1012,7 @@ class EmployeeScheduleController extends Controller
     public function toggleStatus(EmployeeSchedule $employeeSchedule)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if ($employeeSchedule->client_id != $client->id) {
                 return response()->json([
@@ -1044,7 +1046,7 @@ class EmployeeScheduleController extends Controller
     public function import(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             $request->validate([
                 'import_file' => 'required|file|mimes:csv,xlsx,xls'
@@ -1128,7 +1130,7 @@ class EmployeeScheduleController extends Controller
     public function export(Request $request)
     {
         try {
-            $client = Client::where('user_id', auth()->user()->id)->first();
+            $client = CurrentClient::get();
             
             if (!$client) {
                 return response()->json([
@@ -1309,7 +1311,7 @@ class EmployeeScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $client = Auth::user()->client;
+            $client = CurrentClient::get();
             
             $validator = Validator::make($request->all(), [
                 'ids' => 'required|array',
@@ -1363,7 +1365,7 @@ class EmployeeScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $client = Auth::user()->client;
+            $client = CurrentClient::get();
             
             $validator = Validator::make($request->all(), [
                 'ids' => 'required|array',
