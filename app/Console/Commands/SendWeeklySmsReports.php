@@ -294,7 +294,7 @@ class SendWeeklySmsReports extends Command
             ])->withOptions([
                 'verify'  => false,
                 'timeout' => 20,
-            ])->get('http://54.37.15.111/iclock/api/transactions/', [
+            ])->get('http://145.239.74.69:8080/iclock/api/transactions/', [
                 'page'        => 1,
                 'limit'       => 100,
                 'terminal_sn' => $device->device_sn,

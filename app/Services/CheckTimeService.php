@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class CheckTimeService
 {
-    private string $baseUrl = "http://54.37.15.111";
+    private string $baseUrl = "http://145.239.74.69:8080";
     private ?string $generalToken = null;
 
     /**

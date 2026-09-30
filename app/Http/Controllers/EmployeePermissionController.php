@@ -457,7 +457,7 @@ class EmployeePermissionController extends Controller
     public function byClient(Client $client)
     {
         // Vérifier que l'utilisateur peut accéder à ce client
-        if (auth()->user()->client_id && auth()->user()->client_id != $client->id) {
+        if (CurrentClient::id() && CurrentClient::id() != $client->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Non autorisé'

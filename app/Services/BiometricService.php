@@ -193,10 +193,10 @@ class BiometricService
             
             // Essayer d'abord le endpoint des devices/terminaux
             $endpoints = [
-                'http://54.37.15.111/iclock/api/devices/',
-                'http://54.37.15.111/iclock/api/terminals/',
-                'http://54.37.15.111/iclock/api/device/list/',
-                'http://54.37.15.111/iclock/api/terminal/list/'
+                'http://145.239.74.69:8080/iclock/api/devices/',
+                'http://145.239.74.69:8080/iclock/api/terminals/',
+                'http://145.239.74.69:8080/iclock/api/device/list/',
+                'http://145.239.74.69:8080/iclock/api/terminal/list/'
             ];
             
             foreach ($endpoints as $endpoint) {
@@ -263,7 +263,7 @@ class BiometricService
                 'Accept' => 'application/json',
             ])->timeout(10)
               ->connectTimeout(5)
-              ->get('http://54.37.15.111/iclock/api/transactions/', $params);
+              ->get('http://145.239.74.69:8080/iclock/api/transactions/', $params);
             
             if ($response->successful()) {
                 $data = $response->json();
@@ -372,7 +372,7 @@ class BiometricService
             ])->timeout(15)
               ->connectTimeout(10)
               ->retry(2, 1000)
-              ->get('http://54.37.15.111/iclock/api/transactions/', $defaultParams);
+              ->get('http://145.239.74.69:8080/iclock/api/transactions/', $defaultParams);
             
             if ($response->successful()) {
                 $data = $response->json();

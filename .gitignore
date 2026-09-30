@@ -17,3 +17,6 @@ yarn-error.log
 /.idea
 /.vscode
 /checktime-electron/*
+
+# Installateur desktop (artefact volumineux — à déployer, pas à versionner)
+public/downloads/*.exe

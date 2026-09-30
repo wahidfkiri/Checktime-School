@@ -15,7 +15,7 @@ use Illuminate\Http\Client\RequestException;
 
 class AttendanceSyncService
 {
-    private $apiBaseUrl = 'http://54.37.15.111/iclock/api/transactions/';
+    private $apiBaseUrl = 'http://145.239.74.69:8080/iclock/api/transactions/';
     
     // Configuration des timeouts et retry
     private $connectionTimeout = 10; // Timeout de connexion en secondes

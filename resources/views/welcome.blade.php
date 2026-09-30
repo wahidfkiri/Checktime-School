@@ -164,6 +164,34 @@
         .role li i { color: var(--brand); margin-top: 3px; }
         .role.dark li i { color: #6FC0AC; }
 
+        /* ===== DESKTOP APP ===== */
+        .desktop { background: linear-gradient(180deg, var(--paper) 0%, #fff 100%); }
+        .desk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+        .desk-copy .eyebrow { color: var(--brand); background: var(--brand-soft); }
+        .desk-copy h2 { font-size: clamp(1.9rem, 3.4vw, 2.5rem); font-weight: 700; margin: 16px 0 14px; }
+        .desk-lead { color: var(--muted); font-size: 1.06rem; margin-bottom: 22px; max-width: 500px; }
+        .desk-list { list-style: none; margin-bottom: 30px; }
+        .desk-list li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; font-size: .98rem; }
+        .desk-list li i { color: var(--brand); margin-top: 4px; font-size: 1.05rem; }
+        .desk-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+        .desk-meta { font-size: .85rem; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+        .desk-note { margin-top: 16px; font-size: .82rem; color: var(--muted); display: flex; align-items: flex-start; gap: 8px; max-width: 460px; }
+        .desk-note i { color: var(--gold); margin-top: 2px; }
+
+        /* Fake app window */
+        .win { background: #fff; border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); transform: rotate(1deg); }
+        .win-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #EFEBDE; border-bottom: 1px solid var(--rule); }
+        .win-bar .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .win-bar .r { background: #E1655B; } .win-bar .y { background: #E8B24C; } .win-bar .g { background: #54B37F; }
+        .win-title { margin-left: 10px; font-size: .8rem; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 7px; }
+        .win-body { padding: 38px 34px; background: radial-gradient(560px 220px at 82% -12%, var(--brand-soft) 0%, transparent 60%), #fff; text-align: center; }
+        .win-logo { height: 58px; width: auto; margin-bottom: 16px; }
+        .win-body h4 { font-family: 'Sora'; font-size: 1.12rem; margin-bottom: 6px; }
+        .win-body .sub { font-size: .84rem; color: var(--muted); margin-bottom: 22px; }
+        .win-field { text-align: left; background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .88rem; }
+        .win-field i { color: var(--brand); }
+        .win-btn { background: var(--brand); color: #fff; border-radius: 10px; padding: 12px; font-weight: 600; font-size: .9rem; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
         /* CTA band */
         .cta-band { background: radial-gradient(700px 300px at 50% 0%, #24544A 0%, transparent 60%), linear-gradient(160deg, #0E211D, #16302B); color: #fff; text-align: center; border-radius: 26px; padding: 66px 30px; }
         .cta-band h2 { font-size: clamp(1.9rem, 3.4vw, 2.5rem); margin-bottom: 16px; }
@@ -183,6 +211,8 @@
             .preview { max-width: 420px; }
             .feat-grid, .roles-grid { grid-template-columns: 1fr 1fr; }
             .steps { grid-template-columns: 1fr 1fr; }
+            .desk-grid { grid-template-columns: 1fr; gap: 44px; }
+            .desk-visual { max-width: 420px; }
             .nav-links { display: none; }
         }
         @media (max-width: 560px) {
@@ -204,6 +234,7 @@
             <nav class="nav-links">
                 <a href="#features">Fonctionnalités</a>
                 <a href="#how">Comment ça marche</a>
+                <a href="#desktop">Application desktop</a>
             </nav>
             <a href="{{ route('login') }}" class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
         </div>
@@ -312,6 +343,46 @@
                 <div class="step reveal"><div class="num">2</div><h3>Planifier</h3><p>L'école définit ses classes, taux horaires, règles de pénalités et le planning des vacations.</p></div>
                 <div class="step reveal"><div class="num">3</div><h3>Pointer</h3><p>Les enseignants pointent à la pointeuse. Arrivées et départs alimentent automatiquement le système.</p></div>
                 <div class="step reveal"><div class="num">4</div><h3>Rapports &amp; paie</h3><p>Heures, montants et pénalités sont calculés. Les fiches sont générées et envoyées automatiquement.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DESKTOP APP -->
+    <section id="desktop" class="desktop">
+        <div class="wrap desk-grid">
+            <div class="desk-copy reveal">
+                <span class="eyebrow"><i class="bi bi-windows"></i> Application Windows</span>
+                <h2>CheckTime École, sur votre bureau</h2>
+                <p class="desk-lead">Installez l'application de bureau pour ouvrir CheckTime École dans sa propre fenêtre, sans passer par le navigateur. Un raccourci, un double-clic, et vous êtes connecté.</p>
+                <ul class="desk-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Fenêtre native dédiée &amp; démarrage rapide</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Session conservée entre les lancements</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Raccourci Bureau &amp; menu Démarrer</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Mode hors ligne géré, plein écran</li>
+                </ul>
+                <div class="desk-cta">
+                    <a href="{{ asset('downloads/CheckTime-Ecole-Desktop-Setup-1.0.0.exe') }}" class="btn btn-primary" download>
+                        <i class="bi bi-download"></i> Télécharger pour Windows
+                    </a>
+                    <span class="desk-meta"><i class="bi bi-hdd"></i> .exe · ~78&nbsp;Mo · Windows 10/11 (64&nbsp;bits)</span>
+                </div>
+                <p class="desk-note"><i class="bi bi-info-circle-fill"></i> À l'ouverture, si Windows affiche un avertissement SmartScreen : cliquez sur « Informations complémentaires » puis « Exécuter quand même ».</p>
+            </div>
+            <div class="desk-visual reveal">
+                <div class="win">
+                    <div class="win-bar">
+                        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                        <span class="win-title"><i class="bi bi-mortarboard-fill" style="color:var(--brand)"></i> CheckTime École</span>
+                    </div>
+                    <div class="win-body">
+                        <img src="{{ asset('logo.png') }}" alt="CheckTime École" class="win-logo">
+                        <h4>Bienvenue</h4>
+                        <div class="sub">Connectez-vous à votre espace</div>
+                        <div class="win-field"><i class="bi bi-envelope"></i> email@ecole.bj</div>
+                        <div class="win-field"><i class="bi bi-lock"></i> ••••••••••</div>
+                        <div class="win-btn"><i class="bi bi-box-arrow-in-right"></i> Se connecter</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

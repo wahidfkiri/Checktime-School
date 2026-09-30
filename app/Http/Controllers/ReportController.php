@@ -266,7 +266,7 @@ class ReportController extends Controller
                 ])->withOptions([
                     'verify' => false,
                     'timeout' => 30,
-                ])->get('http://54.37.15.111/iclock/api/transactions/', $apiParams);
+                ])->get('http://145.239.74.69:8080/iclock/api/transactions/', $apiParams);
                 
                 if (!$response->successful()) {
                     Log::warning("Erreur API device {$device->device_sn}: " . $response->status());

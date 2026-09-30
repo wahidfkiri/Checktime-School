@@ -70,7 +70,7 @@ class EmployeeController extends Controller
         ]);
 
         // Ajouter le client_id
-        $validated['client_id'] = auth()->user()->client_id;
+        $validated['client_id'] = CurrentClient::id();
 
         
          // Récupérer la configuration d'accès du client
@@ -118,7 +118,7 @@ class EmployeeController extends Controller
             "Content-Type" => "application/json"
         ])
         // ->timeout(30)
-        ->post('http://54.37.15.111/personnel/api/employees/', $apiData);
+        ->post('http://145.239.74.69:8080/personnel/api/employees/', $apiData);
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -227,7 +227,7 @@ public function update(Request $request, $id)
             "Content-Type" => "application/json"
         ])
         ->timeout(30)
-        ->patch('http://54.37.15.111/personnel/api/employees/' . $id . '/', $apiData);
+        ->patch('http://145.239.74.69:8080/personnel/api/employees/' . $id . '/', $apiData);
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -291,7 +291,7 @@ public function destroy($id)
             "Accept" => "application/json",
         ])
         ->timeout(30)
-        ->delete('http://54.37.15.111/personnel/api/employees/' . $id . '/');
+        ->delete('http://145.239.74.69:8080/personnel/api/employees/' . $id . '/');
 
         if ($response->successful()) {
             $this->sync(new Request()); // Synchroniser après suppression

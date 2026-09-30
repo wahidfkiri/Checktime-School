@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class CheckTimeServiceTest
 {
-    private string $baseUrl = "http://54.37.15.111";
+    private string $baseUrl = "http://145.239.74.69:8080";
     private string $username = "CICA";
     private string $password = "CICA@2025";
 

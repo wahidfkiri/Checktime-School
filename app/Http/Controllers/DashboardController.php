@@ -299,7 +299,7 @@ class DashboardController extends Controller
                     "Accept" => "application/json"
                 ])
                 ->timeout(30)
-                ->get('http://54.37.15.111/iclock/api/terminals/', [
+                ->get('http://145.239.74.69:8080/iclock/api/terminals/', [
                     'page' => $page,
                     'limit' => 100
                 ]);

@@ -96,7 +96,7 @@ class AreaController extends Controller
             "Content-Type" => "application/json"
         ])
         ->timeout(30)
-        ->post('http://54.37.15.111/personnel/api/areas/', $apiData);
+        ->post('http://145.239.74.69:8080/personnel/api/areas/', $apiData);
 
         // Vérifier la réponse
         if ($response->successful()) {
@@ -183,7 +183,7 @@ public function update(Request $request, $id)
             "Content-Type" => "application/json"
         ])
         ->timeout(30)
-        ->patch('http://54.37.15.111/personnel/api/areas/' . $id . '/', $apiData);
+        ->patch('http://145.239.74.69:8080/personnel/api/areas/' . $id . '/', $apiData);
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -248,7 +248,7 @@ public function destroy($id)
             "Content-Type" => "application/json"
         ])
         ->timeout(30)
-        ->delete('http://54.37.15.111/personnel/api/areas/' . $id . '/');
+        ->delete('http://145.239.74.69:8080/personnel/api/areas/' . $id . '/');
 
         if ($response->successful()) {
             // Optionnel: Supprimer aussi en local
@@ -379,7 +379,7 @@ public function destroy($id)
                     "Accept" => "application/json"
                 ])
                 ->timeout(30)
-                ->get('http://54.37.15.111/personnel/api/areas/', [
+                ->get('http://145.239.74.69:8080/personnel/api/areas/', [
                     'page' => $page,
                     'limit' => 100
                 ]);

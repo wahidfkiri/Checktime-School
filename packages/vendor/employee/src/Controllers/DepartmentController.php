@@ -87,7 +87,7 @@ class DepartmentController extends Controller
             "Content-Type" => "application/json"
         ])
         ->timeout(30)
-        ->post('http://54.37.15.111/personnel/api/departments/', [
+        ->post('http://145.239.74.69:8080/personnel/api/departments/', [
             'dept_code' => $nextCode,
             'dept_name' => $validated['name'],
         ]);
@@ -168,7 +168,7 @@ public function update(Request $request, $id)
             "Content-Type" => "application/json"
         ])
         ->timeout(30)
-        ->patch('http://54.37.15.111/personnel/api/departments/' . $id . '/', [
+        ->patch('http://145.239.74.69:8080/personnel/api/departments/' . $id . '/', [
             'dept_name' => $validated['name'],
         ]);
 
@@ -236,7 +236,7 @@ public function destroy($id)
             "Accept" => "application/json",
         ])
         ->timeout(30)
-        ->delete('http://54.37.15.111/personnel/api/departments/' . $id . '/');
+        ->delete('http://145.239.74.69:8080/personnel/api/departments/' . $id . '/');
 
         if ($response->successful()) {
             //$this->sync($request); // Synchroniser après suppression
@@ -365,7 +365,7 @@ public function destroy($id)
                     "Accept" => "application/json"
                 ])
                 ->timeout(30)
-                ->get('http://54.37.15.111/personnel/api/departments/', [
+                ->get('http://145.239.74.69:8080/personnel/api/departments/', [
                     'page' => $page,
                     'limit' => 100
                 ]);

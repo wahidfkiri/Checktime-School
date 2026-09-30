@@ -183,7 +183,7 @@ class LeaveController extends Controller
         ]);
 
         try {
-            $leave = Leave::where('client_id', auth()->user()->client_id)
+            $leave = Leave::where('client_id', CurrentClient::id())
                 ->findOrFail($id);
             
             $leave->update([
