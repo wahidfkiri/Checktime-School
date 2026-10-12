@@ -255,8 +255,13 @@ class EmployeeScheduleController extends Controller
                 ], 500);
             }
             
-            // Retourner la vue avec une erreur
-            return view('planning::employee-schedules.index')->with('error', 'Erreur: ' . $e->getMessage());
+            // Retourner la vue avec une erreur (collections vides pour éviter
+            // une seconde erreur "Undefined variable" au rendu Blade).
+            return view('planning::employee-schedules.index', [
+                'employees'     => collect(),
+                'workHourTypes' => collect(),
+                'client'        => $client ?? null,
+            ])->with('error', 'Erreur: ' . $e->getMessage());
         }
     }
 

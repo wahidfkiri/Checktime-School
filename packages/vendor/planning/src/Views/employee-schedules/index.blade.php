@@ -27,6 +27,12 @@
                 </div>
             </div>
 
+            @if(!empty($error))
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{ $error }}
+                </div>
+            @endif
+
             <section class="section">
                 <div class="card">
                     <div class="card-header">
