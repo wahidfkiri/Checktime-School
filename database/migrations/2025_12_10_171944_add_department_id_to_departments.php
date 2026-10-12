@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('departments', function (Blueprint $table) {
-            $table->unsignedBigInteger('department_id')->nullable()->after('client_id');
+            if (!Schema::hasColumn('departments', 'department_id')) {
+                $table->unsignedBigInteger('department_id')->nullable()->after('client_id');
+            }
         });
     }
 

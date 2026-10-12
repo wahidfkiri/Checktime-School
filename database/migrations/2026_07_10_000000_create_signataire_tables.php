@@ -18,6 +18,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('signataire_postes') && Schema::hasTable('signataires')) {
+            return;
+        }
+
         Schema::create('signataire_postes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('client_id');

@@ -9,6 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         // Ajouter des champs à employee_schedules
+        if (!Schema::hasColumn('employee_schedules', 'specific_date')) {
         Schema::table('employee_schedules', function (Blueprint $table) {
             // Pour les horaires planifiés par jour spécifique
             $table->date('specific_date')->nullable()->after('employee_id');
@@ -29,8 +30,10 @@ return new class extends Migration
             $table->index(['employee_id', 'specific_date']);
             $table->index(['employee_id', 'day_of_week', 'is_active']);
         });
+        }
 
         // Ajouter des champs à schedule_rotations
+        if (!Schema::hasColumn('schedule_rotations', 'rotation_type')) {
         Schema::table('schedule_rotations', function (Blueprint $table) {
             // Type de rotation (24h/48h, etc.)
             $table->string('rotation_type', 50)->default('24_48')->after('employee_id');
@@ -51,6 +54,7 @@ return new class extends Migration
             // Statut
             $table->boolean('is_active')->default(true)->after('description');
         });
+        }
 
         // Créer la table des types d'horaires (si elle n'existe pas)
         if (!Schema::hasTable('work_hour_types')) {

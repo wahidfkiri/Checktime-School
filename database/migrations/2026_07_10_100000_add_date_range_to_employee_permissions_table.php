@@ -18,6 +18,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('employee_permissions', 'date_debut')) {
+            return;
+        }
+
         Schema::table('employee_permissions', function (Blueprint $table) {
             $table->date('date_debut')->nullable()->after('employee_id');
             $table->date('date_fin')->nullable()->after('date_debut');

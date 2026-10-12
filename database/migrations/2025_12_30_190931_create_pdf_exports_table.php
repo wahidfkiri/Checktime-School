@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('pdf_export_params')) {
+            return;
+        }
+
         Schema::create('pdf_export_params', function (Blueprint $table) {
             $table->id();
             $table->string('request_id');

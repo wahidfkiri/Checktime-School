@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasColumn('employee_schedules', 'work_days_count')) {
         Schema::table('employee_schedules', function (Blueprint $table) {
             // Colonnes pour le type rotation
             $table->integer('work_days_count')->nullable()->after('repeat_weekly');
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->index(['employee_id', 'schedule_date']);
             $table->index(['schedule_type', 'start_date', 'end_date']);
         });
+        }
     }
 
     /**

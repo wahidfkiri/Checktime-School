@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('devices', function (Blueprint $table) {
-            $table->string('terminal_name')->nullable()->after('alias');
-            $table->string('area_name')->nullable()->after('terminal_name');
+            if (!Schema::hasColumn('devices', 'terminal_name')) {
+                $table->string('terminal_name')->nullable()->after('alias');
+            }
+            if (!Schema::hasColumn('devices', 'area_name')) {
+                $table->string('area_name')->nullable()->after('terminal_name');
+            }
         });
     }
 

@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('access_configs', function (Blueprint $table) {
-            $table->string('general_token')->unique()->after('client_id');
+            if (!Schema::hasColumn('access_configs', 'general_token')) {
+                $table->string('general_token')->unique()->after('client_id');
+            }
         });
     }
 

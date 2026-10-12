@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
+        if (Schema::hasTable('penalty_rules')) {
+            return;
+        }
+
         Schema::create('penalty_rules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('client_id')->unique()->constrained()->cascadeOnDelete();

@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('leaves', function (Blueprint $table) {
-            $table->text('reason')->nullable()->after('end_date');
-            $table->string('status')->default('pending')->after('reason');
+            if (!Schema::hasColumn('leaves', 'reason')) {
+                $table->text('reason')->nullable()->after('end_date');
+            }
+            if (!Schema::hasColumn('leaves', 'status')) {
+                $table->string('status')->default('pending')->after('reason');
+            }
         });
     }
 
