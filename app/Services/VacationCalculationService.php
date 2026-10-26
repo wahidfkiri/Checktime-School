@@ -170,8 +170,9 @@ class VacationCalculationService
             return true;
         }
 
+        // Les missions n'ont pas de workflow de statut : leur simple existence
+        // sur la période justifie l'absence (pas de filtre ->where('status')).
         $onMission = Mission::where('employee_id', $employeeId)
-            ->where('status', 'approved')
             ->where('start_date', '<=', $dateStr)
             ->where('end_date', '>=', $dateStr)
             ->exists();
