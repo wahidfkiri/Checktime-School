@@ -15,7 +15,17 @@ class SubjectController extends Controller
 {
     public function index(Request $request)
     {
-        return view('school::subjects.index');
+        $client = CurrentClient::get();
+
+        $classes = SchoolClass::where('client_id', $client->id ?? 0)
+            ->orderBy('level')->orderBy('name')
+            ->get(['id', 'level', 'name']);
+
+        $teachers = Employee::where('client_id', $client->id ?? 0)
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name', 'emp_code']);
+
+        return view('school::subjects.index', compact('classes', 'teachers'));
     }
 
     /**

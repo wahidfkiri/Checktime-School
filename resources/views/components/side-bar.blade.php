@@ -235,16 +235,22 @@
         </li>
 
         <!-- Gestion Scolaire -->
-        <li class="sidebar-item has-sub @if(request()->routeIs('classes.*') || request()->routeIs('vacation-schedules.*') || request()->routeIs('penalty-rules.*') || request()->routeIs('vacation-reports.*')) active @endif">
+        <li class="sidebar-item has-sub @if(request()->routeIs('classes.*') || request()->routeIs('subjects.*') || request()->routeIs('vacation-schedules.*') || request()->routeIs('penalty-rules.*') || request()->routeIs('vacation-reports.*')) active @endif">
           <a href="#" class="sidebar-link">
             <i class="bi bi-mortarboard-fill"></i>
             <span>Gestion <br>Scolaire</span>
           </a>
-          <ul class="submenu @if(request()->routeIs('classes.*') || request()->routeIs('vacation-schedules.*') || request()->routeIs('penalty-rules.*') || request()->routeIs('vacation-reports.*')) active @endif">
+          <ul class="submenu @if(request()->routeIs('classes.*') || request()->routeIs('subjects.*') || request()->routeIs('vacation-schedules.*') || request()->routeIs('penalty-rules.*') || request()->routeIs('vacation-reports.*')) active @endif">
             <li class="submenu-item @if(request()->routeIs('classes.*')) active @endif">
               <a href="{{route('classes.index')}}">
                 <i class="bi bi-collection"></i>
                 <span>Classes</span>
+              </a>
+            </li>
+            <li class="submenu-item @if(request()->routeIs('subjects.*')) active @endif">
+              <a href="{{route('subjects.index')}}">
+                <i class="bi bi-journal-bookmark"></i>
+                <span>Matières</span>
               </a>
             </li>
             <li class="submenu-item @if(request()->routeIs('vacation-schedules.*')) active @endif">
