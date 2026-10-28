@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Vendor\School\Controllers\ClassController;
+use Vendor\School\Controllers\SubjectController;
 use Vendor\School\Controllers\VacationScheduleController;
 use Vendor\School\Controllers\PenaltyRuleController;
 use Vendor\School\Controllers\VacationReportController;
@@ -15,6 +16,16 @@ Route::middleware(['web', 'auth', 'role:super-admin|client', 'client.active'])->
         Route::post('/', [ClassController::class, 'store'])->name('store');
         Route::put('/{id}', [ClassController::class, 'update'])->name('update');
         Route::delete('/{id}', [ClassController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('subjects')->name('subjects.')->group(function () {
+        Route::get('/', [SubjectController::class, 'index'])->name('index');
+        Route::get('/local', [SubjectController::class, 'getLocalSubjects'])->name('local');
+        Route::get('/list', [SubjectController::class, 'list'])->name('list');
+        Route::get('/{id}', [SubjectController::class, 'show'])->name('show');
+        Route::post('/', [SubjectController::class, 'store'])->name('store');
+        Route::put('/{id}', [SubjectController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SubjectController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('vacation-schedules')->name('vacation-schedules.')->group(function () {
