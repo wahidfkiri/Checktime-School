@@ -268,7 +268,7 @@
                                                 <td>{{ \Carbon\Carbon::parse($vacation->start_time)->format('H:i') }} — {{ \Carbon\Carbon::parse($vacation->end_time)->format('H:i') }}</td>
                                                 <td><strong>{{ $vacation->employee->full_name ?? 'N/A' }}</strong></td>
                                                 <td>{{ $vacation->schoolClass->name ?? 'N/A' }}</td>
-                                                <td>{{ $vacation->subject ?? '-' }}</td>
+                                                <td>{{ $vacation->matiere?->name ?? $vacation->subject ?? '-' }}</td>
                                             </tr>
                                             @empty
                                             <tr>

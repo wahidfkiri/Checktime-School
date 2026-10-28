@@ -28,7 +28,7 @@ class VacationCalculationService
         $vacationsByDay = EmployeeSchedule::where('employee_id', $employee->id)
             ->where('schedule_type', 'fixe')
             ->where('is_active', true)
-            ->with('schoolClass')
+            ->with(['schoolClass', 'matiere'])
             ->get()
             ->groupBy('day_of_week');
 
@@ -146,7 +146,7 @@ class VacationCalculationService
             'planned_start' => \Carbon\Carbon::parse($vacation->start_time)->format('H:i'),
             'planned_end' => \Carbon\Carbon::parse($vacation->end_time)->format('H:i'),
             'class_name' => $vacation->schoolClass->name ?? 'N/A',
-            'subject' => $vacation->subject,
+            'subject' => $vacation->matiere?->name ?? $vacation->subject,
             'status' => $status,
             'actual_arrival' => null,
             'actual_departure' => null,

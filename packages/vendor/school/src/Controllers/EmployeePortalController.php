@@ -33,7 +33,7 @@ class EmployeePortalController extends Controller
         $schedules = $employee->schedules()
             ->where('schedule_type', 'fixe')
             ->where('is_active', true)
-            ->with('schoolClass')
+            ->with(['schoolClass', 'matiere'])
             ->orderBy('day_of_week')
             ->orderBy('start_time')
             ->get();

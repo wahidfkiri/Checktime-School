@@ -48,7 +48,7 @@
                                             <td>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}</td>
                                             <td>{{ $schedule->schoolClass->name ?? 'N/A' }}</td>
-                                            <td>{{ $schedule->subject ?? '-' }}</td>
+                                            <td>{{ $schedule->matiere?->name ?? $schedule->subject ?? '-' }}</td>
                                         </tr>
                                     @empty
                                         <tr>

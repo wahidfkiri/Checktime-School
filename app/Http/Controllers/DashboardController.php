@@ -145,7 +145,7 @@ class DashboardController extends Controller
             ->where('schedule_type', 'fixe')
             ->where('is_active', true)
             ->where('day_of_week', $today->dayOfWeekIso)
-            ->with(['employee', 'schoolClass'])
+            ->with(['employee', 'schoolClass', 'matiere'])
             ->orderBy('start_time')
             ->get();
 
