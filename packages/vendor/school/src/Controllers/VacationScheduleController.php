@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Employee;
 use App\Models\EmployeeSchedule;
 use App\Models\SchoolClass;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -25,14 +26,19 @@ class VacationScheduleController extends Controller
 
         $classes = SchoolClass::forClient($client->id ?? 0)->active()->orderBy('name')->get();
 
-        return view('school::vacations.index', compact('employees', 'classes'));
+        $subjects = Subject::where('client_id', $client->id ?? 0)
+            ->where('status', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code']);
+
+        return view('school::vacations.index', compact('employees', 'classes', 'subjects'));
     }
 
     public function getLocalSchedules(Request $request)
     {
         $client = CurrentClient::get();
 
-        $query = EmployeeSchedule::with(['employee', 'schoolClass'])
+        $query = EmployeeSchedule::with(['employee', 'schoolClass', 'matiere'])
             ->where('client_id', $client->id ?? 0)
             ->where('schedule_type', 'fixe');
 
@@ -63,6 +69,9 @@ class VacationScheduleController extends Controller
             ->addColumn('class_name', function ($row) {
                 return $row->schoolClass->name ?? 'N/A';
             })
+            ->addColumn('matiere_name', function ($row) {
+                return $row->matiere->name ?? ($row->subject ?: '—');
+            })
             ->addColumn('actions', function ($row) {
                 return '
                     <div class="btn-group" role="group">
@@ -73,7 +82,7 @@ class VacationScheduleController extends Controller
                             data-start_time="' . date('H:i', strtotime($row->start_time)) . '"
                             data-end_time="' . date('H:i', strtotime($row->end_time)) . '"
                             data-class_id="' . $row->class_id . '"
-                            data-subject="' . htmlspecialchars($row->subject ?? '', ENT_QUOTES, 'UTF-8') . '">
+                            data-subject_id="' . ($row->subject_id ?? '') . '">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-danger delete-vacation-btn"
@@ -98,7 +107,7 @@ class VacationScheduleController extends Controller
                 'start_time' => 'required|date_format:H:i',
                 'end_time' => 'required|date_format:H:i|after:start_time',
                 'class_id' => 'required|exists:classes,id',
-                'subject' => 'nullable|string|max:100',
+                'subject_id' => 'nullable|integer',
             ]);
 
             $employee = Employee::find($validated['employee_id']);
@@ -109,6 +118,11 @@ class VacationScheduleController extends Controller
             $schoolClass = SchoolClass::find($validated['class_id']);
             if ($schoolClass->client_id != $client->id) {
                 return response()->json(['success' => false, 'message' => 'Classe non autorisée.'], 403);
+            }
+
+            [$subjectId, $subjectName] = $this->resolveSubject($validated['subject_id'] ?? null, $client);
+            if ($subjectId === false) {
+                return response()->json(['success' => false, 'message' => 'Matière non autorisée.'], 403);
             }
 
             $duplicate = EmployeeSchedule::where('employee_id', $validated['employee_id'])
@@ -127,7 +141,8 @@ class VacationScheduleController extends Controller
                 'client_id' => $client->id,
                 'employee_id' => $validated['employee_id'],
                 'class_id' => $validated['class_id'],
-                'subject' => $validated['subject'] ?? null,
+                'subject_id' => $subjectId,
+                'subject' => $subjectName,
                 'schedule_type' => 'fixe',
                 'day_of_week' => $validated['day_of_week'],
                 'start_time' => $validated['start_time'],
@@ -175,7 +190,7 @@ class VacationScheduleController extends Controller
                 'start_time' => 'required|date_format:H:i',
                 'end_time' => 'required|date_format:H:i|after:start_time',
                 'class_id' => 'required|exists:classes,id',
-                'subject' => 'nullable|string|max:100',
+                'subject_id' => 'nullable|integer',
             ]);
 
             $employee = Employee::find($validated['employee_id']);
@@ -186,6 +201,11 @@ class VacationScheduleController extends Controller
             $schoolClass = SchoolClass::find($validated['class_id']);
             if ($schoolClass->client_id != $client->id) {
                 return response()->json(['success' => false, 'message' => 'Classe non autorisée.'], 403);
+            }
+
+            [$subjectId, $subjectName] = $this->resolveSubject($validated['subject_id'] ?? null, $client);
+            if ($subjectId === false) {
+                return response()->json(['success' => false, 'message' => 'Matière non autorisée.'], 403);
             }
 
             $duplicate = EmployeeSchedule::where('employee_id', $validated['employee_id'])
@@ -204,7 +224,8 @@ class VacationScheduleController extends Controller
             $schedule->update([
                 'employee_id' => $validated['employee_id'],
                 'class_id' => $validated['class_id'],
-                'subject' => $validated['subject'] ?? null,
+                'subject_id' => $subjectId,
+                'subject' => $subjectName,
                 'day_of_week' => $validated['day_of_week'],
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
@@ -226,6 +247,26 @@ class VacationScheduleController extends Controller
                 'message' => 'Erreur lors de la modification : ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Résout une matière (scopée à l'école) à partir de son id.
+     * Retourne [subject_id|null, subject_name|null], ou [false, null] si
+     * un id est fourni mais n'appartient pas à l'école courante.
+     */
+    private function resolveSubject($subjectId, $client): array
+    {
+        if (empty($subjectId)) {
+            return [null, null];
+        }
+
+        $subject = Subject::where('client_id', $client->id ?? 0)->find($subjectId);
+
+        if (!$subject) {
+            return [false, null];
+        }
+
+        return [$subject->id, $subject->name];
     }
 
     public function destroy($id)

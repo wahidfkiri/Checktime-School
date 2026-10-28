@@ -159,9 +159,15 @@
                         <div class="invalid-feedback" id="class_id-error"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="vacation_subject" class="form-label">Matière</label>
-                        <input type="text" class="form-control" id="vacation_subject" name="subject" maxlength="100" placeholder="ex: Maths, SPCT">
-                        <div class="invalid-feedback" id="subject-error"></div>
+                        <label for="vacation_subject_id" class="form-label">Matière</label>
+                        <select class="form-control" id="vacation_subject_id" name="subject_id">
+                            <option value="">— Aucune —</option>
+                            @foreach($subjects as $s)
+                                <option value="{{ $s->id }}">{{ $s->name }}@if($s->code) ({{ $s->code }})@endif</option>
+                            @endforeach
+                        </select>
+                        <div class="invalid-feedback" id="subject_id-error"></div>
+                        <small class="text-muted">Filtrée selon la classe et l'enseignant choisis.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -235,9 +241,14 @@
                         <div class="invalid-feedback" id="edit-class_id-error"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_vacation_subject" class="form-label">Matière</label>
-                        <input type="text" class="form-control" id="edit_vacation_subject" name="subject" maxlength="100">
-                        <div class="invalid-feedback" id="edit-subject-error"></div>
+                        <label for="edit_vacation_subject_id" class="form-label">Matière</label>
+                        <select class="form-control" id="edit_vacation_subject_id" name="subject_id">
+                            <option value="">— Aucune —</option>
+                            @foreach($subjects as $s)
+                                <option value="{{ $s->id }}">{{ $s->name }}@if($s->code) ({{ $s->code }})@endif</option>
+                            @endforeach
+                        </select>
+                        <div class="invalid-feedback" id="edit-subject_id-error"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -280,6 +291,43 @@
 $(document).ready(function() {
     let vacationToDelete = null;
 
+    // ----- Matières : cascade souple (filtrage par classe/enseignant) -----
+    var SUBJECTS = @json($subjects);
+    var SUBJECTS_MAP = {};
+    SUBJECTS.forEach(function(s){ SUBJECTS_MAP[String(s.id)] = s; });
+
+    function subjectOption(s, selId) {
+        var label = s.name + (s.code ? ' (' + s.code + ')' : '');
+        var opt = $('<option></option>').val(s.id).text(label);
+        if (String(s.id) === String(selId)) opt.prop('selected', true);
+        return opt;
+    }
+
+    function fillSubjects($sel, list, selId) {
+        $sel.empty().append('<option value="">— Aucune —</option>');
+        var present = {};
+        list.forEach(function(s){ present[String(s.id)] = true; $sel.append(subjectOption(s, selId)); });
+        // garde la matière déjà sélectionnée même si elle sort du filtre (souple)
+        if (selId && !present[String(selId)] && SUBJECTS_MAP[String(selId)]) {
+            $sel.append(subjectOption(SUBJECTS_MAP[String(selId)], selId));
+        }
+        $sel.val(selId || '');
+    }
+
+    function loadSubjects($sel, classId, employeeId, selId) {
+        if (!classId && !employeeId) { fillSubjects($sel, SUBJECTS, selId); return; }
+        $.getJSON("{{ route('subjects.list') }}", { class_id: classId || '', employee_id: employeeId || '' })
+            .done(function(list){ fillSubjects($sel, (list && list.length) ? list : SUBJECTS, selId); })
+            .fail(function(){ fillSubjects($sel, SUBJECTS, selId); });
+    }
+
+    $('#vacation_class_id, #vacation_employee_id').on('change', function() {
+        loadSubjects($('#vacation_subject_id'), $('#vacation_class_id').val(), $('#vacation_employee_id').val(), $('#vacation_subject_id').val());
+    });
+    $('#edit_vacation_class_id, #edit_vacation_employee_id').on('change', function() {
+        loadSubjects($('#edit_vacation_subject_id'), $('#edit_vacation_class_id').val(), $('#edit_vacation_employee_id').val(), $('#edit_vacation_subject_id').val());
+    });
+
     var table = $('#vacations-table').DataTable({
         processing: true,
         serverSide: true,
@@ -296,7 +344,7 @@ $(document).ready(function() {
             { data: 'start_time_formatted', name: 'start_time_formatted', orderable: false, searchable: false, width: '10%' },
             { data: 'end_time_formatted', name: 'end_time_formatted', orderable: false, searchable: false, width: '10%' },
             { data: 'class_name', name: 'class_name', width: '18%' },
-            { data: 'subject', name: 'subject', width: '15%' },
+            { data: 'matiere_name', name: 'matiere_name', orderable: false, searchable: false, width: '15%' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false, width: '15%' }
         ],
         language: {
@@ -320,7 +368,7 @@ $(document).ready(function() {
                 $(this).data('start_time'),
                 $(this).data('end_time'),
                 $(this).data('class_id'),
-                $(this).data('subject')
+                $(this).data('subject_id')
             );
         });
 
@@ -330,14 +378,14 @@ $(document).ready(function() {
         });
     }
 
-    function openEditModal(id, employeeId, dayOfWeek, startTime, endTime, classId, subject) {
+    function openEditModal(id, employeeId, dayOfWeek, startTime, endTime, classId, subjectId) {
         $('#edit_vacation_id').val(id);
         $('#edit_vacation_employee_id').val(employeeId);
         $('#edit_vacation_day_of_week').val(dayOfWeek);
         $('#edit_vacation_start_time').val(startTime);
         $('#edit_vacation_end_time').val(endTime);
         $('#edit_vacation_class_id').val(classId);
-        $('#edit_vacation_subject').val(subject);
+        loadSubjects($('#edit_vacation_subject_id'), classId, employeeId, subjectId);
 
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
@@ -381,7 +429,7 @@ $(document).ready(function() {
             start_time: $('#vacation_start_time').val(),
             end_time: $('#vacation_end_time').val(),
             class_id: $('#vacation_class_id').val(),
-            subject: $('#vacation_subject').val(),
+            subject_id: $('#vacation_subject_id').val(),
             _token: "{{ csrf_token() }}"
         };
 
@@ -452,7 +500,7 @@ $(document).ready(function() {
             start_time: $('#edit_vacation_start_time').val(),
             end_time: $('#edit_vacation_end_time').val(),
             class_id: $('#edit_vacation_class_id').val(),
-            subject: $('#edit_vacation_subject').val(),
+            subject_id: $('#edit_vacation_subject_id').val(),
             _token: "{{ csrf_token() }}"
         };
 
