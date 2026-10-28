@@ -12,6 +12,7 @@ class EmployeeSchedule extends Model
         'client_id',
         'employee_id',
         'class_id',
+        'subject_id',
         'subject',
         'schedule_type',
         'day_of_week',
@@ -65,6 +66,13 @@ class EmployeeSchedule extends Model
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
+    // Nommée `matiere` et non `subject` pour éviter la collision avec la
+    // colonne texte `subject` (conservée pour rétro-compat le temps du backfill).
+    public function matiere(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
 
     // Scopes
