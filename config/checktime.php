@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'base_url' => env('CHECKTIME_BASE_URL', 'http://145.239.74.69:8080'),
+    'base_url' => env('CHECKTIME_BASE_URL', 'http://195.110.34.126:8080'),
     'username' => env('CHECKTIME_USERNAME', 'CICA'),
     'password' => env('CHECKTIME_PASSWORD', 'CICA@2025'),
     
